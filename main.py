@@ -10,6 +10,11 @@ from messages import *
 # how to restrict access https://stackoverflow.com/questions/35368557/how-to-limit-access-to-a-telegram-bot
 
 
+# youtube player bot example, https://www.youtube.com/watch?v=ml-5tXRmmFk&ab_channel=RoboticNation
+
+# I think we'll want people or admin to be able to play songs with song names or url's
+
+
 # db tut https://github.com/replit/replit-py/blob/fc47b96202667ca8a04827285a19e94912bdca29/docs/db_tutorial.rst
 
 API_KEY = os.getenv('API_KEY')
