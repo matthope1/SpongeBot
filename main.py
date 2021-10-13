@@ -17,6 +17,53 @@ from messages import *
 
 # db tut https://github.com/replit/replit-py/blob/fc47b96202667ca8a04827285a19e94912bdca29/docs/db_tutorial.rst
 
+# https://stackoverflow.com/questions/67177501/horizontally-scale-discord-py
+
+
+'''
+# personal useage 
+send the bot to other rooms to do work
+play music, have it conduct a shill raid
+
+shill raid/ leader
+it would use a bunch of saved chat urls
+it picks a random url, then itll say 3 2 1, and post one of these random urls
+
+the users in that group will go to that group and post their shill text
+
+leader text example: 
+
+OK GUYS GET READY TO SHILL
+ 5 sec 
+/ shill or soft shill
+5 sec
+
+so make it so main admin can add users to admin list, where they can have access to the bot for a user defined amount of time
+
+if someone who is not admin makes a request to the bot and they are not admin,
+send message saying "you need to be an admin to use this bot, please talk to Sponge "
+
+add /help
+
+/raid for automated shill raid
+
+/music-playlist 1 : house
+/music-playlist 2 : rap  
+/music-playlist 3 : default 
+
+/music command connects to music live stream
+
+
+a bot that is automated to send messages to public groups
+sends messages to a public group on a time interval
+add the ability to change the shill message and add pictures to messages?
+
+
+
+
+
+'''
+
 API_KEY = os.getenv('API_KEY')
 bot = telebot.TeleBot(API_KEY)
 
