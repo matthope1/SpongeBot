@@ -166,6 +166,14 @@ json = ["ujson"]
 redis = ["redis (>=3.4.1)"]
 
 [[package]]
+name = "pytube"
+version = "11.0.1"
+description = "Python 3 library for downloading YouTube Videos."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
 name = "replit"
 version = "3.2.4"
 description = "A library for interacting with features of repl.it"
@@ -245,7 +253,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "fc42ff01fb526bedab7728d1d9bb0f9bceade8ff5c82a3e6506bb213e9ddb544"
+content-hash = "76b4a81a6b56a1499f3a89c2ecf33b14889f42bc64396d29648fef61697ab16d"
 
 [metadata.files]
 aiohttp = [
@@ -463,6 +471,10 @@ multidict = [
 ]
 pytelegrambotapi = [
     {file = "pyTelegramBotAPI-3.8.3.tar.gz", hash = "sha256:afdd887fff42a963f13d09a1f4f5fd24aef08f4b8a594f2ac11e0a29022f1518"},
+]
+pytube = [
+    {file = "pytube-11.0.1-py3-none-any.whl", hash = "sha256:d4dfea7394d7662edac3831432b349b2afac984e0d0bc4bdb611ec1f3fc16318"},
+    {file = "pytube-11.0.1.tar.gz", hash = "sha256:47643a6ff553cbc4d6be748ff14c9c45f79984e15005adff25d62b18110abe43"},
 ]
 replit = [
     {file = "replit-3.2.4-py3-none-any.whl", hash = "sha256:4fa5895e1e090ba23c179641bc88ab0486d1bea696515aa3147fce55733e29e1"},
