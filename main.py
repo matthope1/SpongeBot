@@ -2,12 +2,14 @@ import os
 import telebot
 import time
 import requests
+import ast
 from replit import db
 import asyncio
 from functools import wraps
 from pytube import YouTube
 from messages import *
 
+from datetime import datetime
 
 
 # how to restrict access https://stackoverflow.com/questions/35368557/how-to-limit-access-to-a-telegram-bot
@@ -16,8 +18,6 @@ from messages import *
 # youtube player bot example, https://www.youtube.com/watch?v=ml-5tXRmmFk&ab_channel=RoboticNation
 
 # I think we'll want people or admin to be able to play songs with song names or url's
-
-
 
 
 # db tut https://github.com/replit/replit-py/blob/fc47b96202667ca8a04827285a19e94912bdca29/docs/db_tutorial.rst
@@ -83,8 +83,6 @@ just paid for bot access
 How to make sure this scales?
 '''
 
-
-
 API_KEY = os.getenv('API_KEY')
 bot = telebot.TeleBot(API_KEY)
 
@@ -97,33 +95,32 @@ def check_game_master(func):
   '''Decorator that reports the execution time.'''
 
   def wrap(*args, **kwargs):
-
-      # print("args: ", *args)
-      message = args[0]
-      print("Message", message)
-
-      # print("this user called ", message.from_user.id)
-      
-      # if is_game_master(message.from_user.id):
-        # print("this is game master")
+    message = args[0]
+    
+    res = is_game_master(message.from_user.id)
+    if res :
       result = func(*args, **kwargs)
       return result
-      # else:
-        # print("not game master")
-        # return
+    else:
+      bot.send_message(message.chat.id, f"You are not the game master.")
+      return
 
   return wrap
 
 
+# TODO: test checkadmin admin
 def check_admin(func):
   '''Decorator that reports the execution time.'''
 
   def wrap(*args, **kwargs):
-      print("before function call")
+    message = args[0]
+
+    if is_admin(message.from_user.username):
       result = func(*args, **kwargs)
-      print("after function call")
-        
       return result
+    else:
+      bot.send_message(message.chat.id, f"You are not an admin, please contact sponge to gain admin access")
+    
   return wrap
   
 
@@ -136,21 +133,56 @@ def list_database():
 
 
 def is_admin(username):
-  print("is admin called", user_id)
+  # id admin needs to check how long since the user we are validating has been inside of the admin list
+  # we need to be able to check if a certain amount of time has passed to revoke admin status
+
+  found = False
+  user_acc = ''
+
+  # if any(d['username'] == username for d in db["adminList"]):
+  # also check if time past is less than some alotted time 
+
+  raw_admin_list = ast.literal_eval(db.get_raw("adminList"))
+
+  for user in raw_admin_list:
+    if user['username'] == username:
+      user_acc = user
+      found = True
+
+  if found:
+    # def check_time_passed(dateTimeStr, hours):
+    res = check_time_passed(user_acc['createdDate'], 3)
+    if res:
+      # user is still admin
+      return True
+    else:
+      # TODO:
+      # user is not admin anymore remove them from admin list
+      # indicate to user that user is not admin
+      # TODO: 
+      # add message handler for user to check how much time they have admin access for
+      return False
+
+  else:
+    print("not found")
+    return False
+
 
 def is_game_master(userId):
   print("is game master called", userId)
 
-  if userID == db["gameMaster"]:
+  if userId == db["gameMaster"]:
     return True
   else:
     return False
 
 
 def db_init():
+  # reset values for all keys in db
   db["chatNames"] = [] 
   db["chatLinks"] = []
   db["adminList"] = []
+
   print("database initialization complete")
 
 def parse_chat_link(raw_link):
@@ -160,40 +192,91 @@ def parse_chat_link(raw_link):
   return chat_id
 
 
+# checks if more time has passed than the hours argument
+# returns boolean (true if more time as passed)
+
+def check_time_passed(dateTimeStr, hours):
+  print("check time passed")
+  dateTimeObj = datetime.strptime(dateTimeStr , '%d/%m/%y %H:%M:%S') 
+  now = datetime.now()
+  timeDiff = (now - dateTimeObj)
+  timeDiffInSeconds =  timeDiff.total_seconds() 
+
+  print("time diff in seconds", timeDiffInSeconds)
+
+  # 3600 seconds in an hour
+  if timeDiffInSeconds > hours * 3600:
+    print(f"more than {hours} hours have passed")
+    return True
+  else:
+    print(f"less than {hours} hours have passed")
+    return False
+
+
 @bot.message_handler(commands=['add_admin'])
 def add_user_admin(message):
-  # admin list is going to be a list of usernames
+  # handler for adding admin level user in database
 
-  username = message.text.split('add_admin')[1].strip()
+  # check if username is given in correct format
+  if '@' not in message.text:
+    bot.send_message(message.chat.id, "incorrect username format")
+    return
 
-  print("username", username)
+  username = message.text.split('@')[1].strip()
+  createdDate = datetime.now().strftime('%d/%m/%y %H:%M:%S')
+
+  new_admin = {
+    "username" : username,
+    "createdDate": createdDate 
+  }
 
   try:
-    if username not in db["adminList"]:
-      db["adminList"].append(username)
-
-      if username in db["adminList"]:
-        bot.send_message(message.chat.id, f"Group {username} was sucessfully added to your admin list")
-
+    if not any(d['username'] == username for d in db["adminList"]):
+      # append copy of dict to create new ref
+      db["adminList"].append(new_admin.copy())
+  
+      if any(d['username'] == username for d in db["adminList"]):
+        bot.send_message(message.chat.id, f"{username} was sucessfully added to your admin list")
+    else:
+      bot.send_message(message.chat.id, f"This user is already an admin")
+  
   except:
-    bot.send_message(message.chat.id, f"There was an error adding user to admin list")
+    bot.send_message(message.chat.id, f"There was an error while trying to add {username} to admin list")
 
 
 @bot.message_handler(commands=['dbInit'])
+@check_admin
 def db_init_handler(message):
   db_init()
-
 
 @bot.message_handler(commands=['Greet'])
 @check_game_master
 def greet(message):
-  # print("message", message)
   
   user = message.from_user 
   print("user", user.id)
   list_database()
 
   bot.reply_to(message, "Hey! Hows it going?")
+
+"""
+TODO: 
+create a view view admins function
+"""
+
+@bot.message_handler(commands=['view_admins'])
+@check_game_master
+def view_admins(message):
+
+  raw_admin_list = ast.literal_eval(db.get_raw("adminList"))
+
+  print("admins: ", raw_admin_list)
+  bot.reply_to(message, f"admins: {raw_admin_list}")
+
+  for user in raw_admin_list:
+    print("username", user['username'])
+    print("date created", user['createdDate'])
+
 
 
 """
