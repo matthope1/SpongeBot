@@ -107,8 +107,6 @@ def check_game_master(func):
 
   return wrap
 
-
-# TODO: test checkadmin admin
 def check_admin(func):
   '''Decorator that reports the execution time.'''
 
@@ -152,20 +150,26 @@ def is_admin(username):
   if found:
     # def check_time_passed(dateTimeStr, hours):
     res = check_time_passed(user_acc['createdDate'], 3)
-    if res:
+
+    if not res:
       # user is still admin
+      print("user is still an admin, continue on to requested fuction call")
       return True
     else:
       # TODO:
       # user is not admin anymore remove them from admin list
       # indicate to user that user is not admin
-      # TODO: 
-      # add message handler for user to check how much time they have admin access for
+      raw_admin_list.remove(user_acc)
+      print("raw admin list after removal", raw_admin_list)
+      db['adminList'] = raw_admin_list
+      print("user ran out of admin time")
+
       return False
 
   else:
     print("not found")
     return False
+
 
 
 def is_game_master(userId):
@@ -211,6 +215,16 @@ def check_time_passed(dateTimeStr, hours):
   else:
     print(f"less than {hours} hours have passed")
     return False
+
+
+# TODO: 
+# add message handler for user to check how much time they have admin access for
+@bot.message_handler(commands=['time_left'])
+def time_left(message):
+  # get admin user object from database for user who sent message
+  # calculate how much time is left before their admin priv expires
+  # return/display time to user
+  print('time left called')
 
 
 @bot.message_handler(commands=['add_admin'])
