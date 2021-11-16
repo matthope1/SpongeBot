@@ -113,11 +113,16 @@ def check_admin(func):
   def wrap(*args, **kwargs):
     message = args[0]
 
-    if is_admin(message.from_user.username):
+    user_is_admin, err_msg = is_admin(message.from_user.username)
+
+    if user_is_admin:
       result = func(*args, **kwargs)
       return result
     else:
-      bot.send_message(message.chat.id, f"You are not an admin, please contact sponge to gain admin access")
+      if err_msg:
+        bot.send_message(message.chat.id, f"{err_msg}")
+      else:   
+        bot.send_message(message.chat.id, f"You are not an admin, please contact sponge to gain admin access")
     
   return wrap
   
@@ -150,27 +155,22 @@ def is_admin(username):
   if found:
     # def check_time_passed(dateTimeStr, hours):
     res = check_time_passed(user_acc['createdDate'], 3)
-
+    # res = check_time_passed(user_acc['createdDate'], 0.001)
     if not res:
       # user is still admin
       print("user is still an admin, continue on to requested fuction call")
-      return True
+      return True 
     else:
-      # TODO:
-      # user is not admin anymore remove them from admin list
-      # indicate to user that user is not admin
       raw_admin_list.remove(user_acc)
       print("raw admin list after removal", raw_admin_list)
       db['adminList'] = raw_admin_list
       print("user ran out of admin time")
-
-      return False
+      # TODO: add name of buy time command
+      return False, 'Sorry! Your time as admin has ran out, please purchase more time with {PLACE BUY TIME CMD HERE}'
 
   else:
     print("not found")
     return False
-
-
 
 def is_game_master(userId):
   print("is game master called", userId)
@@ -179,7 +179,6 @@ def is_game_master(userId):
     return True
   else:
     return False
-
 
 def db_init():
   # reset values for all keys in db
@@ -195,10 +194,8 @@ def parse_chat_link(raw_link):
   chat_id = parsed_link[1]
   return chat_id
 
-
 # checks if more time has passed than the hours argument
 # returns boolean (true if more time as passed)
-
 def check_time_passed(dateTimeStr, hours):
   print("check time passed")
   dateTimeObj = datetime.strptime(dateTimeStr , '%d/%m/%y %H:%M:%S') 
@@ -225,6 +222,32 @@ def time_left(message):
   # calculate how much time is left before their admin priv expires
   # return/display time to user
   print('time left called')
+  username = message.from_user.username
+
+  raw_admin_list = ast.literal_eval(db.get_raw("adminList"))
+
+  for user in raw_admin_list:
+    print(f"{user['username']} == {username}")
+    print(user['username'] == username)
+    if user['username'] == username:
+      print("user found")
+      date_time_str = user['createdDate']
+      print(f"date time str = {date_time_str}")
+      # TODO: fix me
+      date_time_obj = datetime.datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')
+      print("before")
+      print(date_time_obj)
+      print("after")
+      print(f"time left for {username}: {date_time_obj} ")
+      now = datetime.now()
+      print(f"current time {now}")
+      print(f"time diff = {now - date_time_obj}")
+      bot.send_message(message.chat.id, f"Time left as admin: {date_time_obj}")
+    else: 
+
+      print("user not found")
+
+      bot.send_message(message.chat.id, f"Looks like you ran out of time")
 
 
 @bot.message_handler(commands=['add_admin'])
@@ -273,11 +296,6 @@ def greet(message):
 
   bot.reply_to(message, "Hey! Hows it going?")
 
-"""
-TODO: 
-create a view view admins function
-"""
-
 @bot.message_handler(commands=['view_admins'])
 @check_game_master
 def view_admins(message):
@@ -290,8 +308,6 @@ def view_admins(message):
   for user in raw_admin_list:
     print("username", user['username'])
     print("date created", user['createdDate'])
-
-
 
 """
 
@@ -389,10 +405,13 @@ def message_all_groups(message):
         telegram_api_url = f"https://api.telegram.org/bot{API_KEY}/sendMessage?chat_id=@{chat_id}&text={message_to_send}"
         # TODO: add error handling here
         # if message request to the api fails, send message back to user saying that there was an issue sending message to this group
-
         tel_resp = requests.get(telegram_api_url)
+
+        # TODO: test what happens when the message fails
+        # what happens when that group doesn't exist
+        if not tel_resp: 
+          bot.send_message(message.chat.id, f"There was an issue sending a message to{chat_link}")
     
-  
   except:
     bot.send_message(message.chat.id, "There was an error while trying to send a message to all groups. Please try again or contact my creator")
 
@@ -403,7 +422,6 @@ def message_chat(message):
   telegram_api_url = f"https://api.telegram.org/bot{API_KEY}/sendMessage?chat_id=@{chat_id}&text={packages_string}"
 
   tel_resp = requests.get(telegram_api_url)
-
 
   print()
   print()
@@ -424,7 +442,6 @@ def packages(message):
   bot.send_message(message.chat.id, packages_string)
 
 
-
 # TODO: 
 
 def yt_search(song):
@@ -436,8 +453,6 @@ def yt_search(song):
       video_id = result["result"][0]["id"]
       url = f"https://youtu.be/{video_id}"
       return url
-
-
 
 @bot.message_handler(commands=['Song'])
 async def song(client, message):
@@ -475,11 +490,7 @@ async def song(client, message):
     await status.delete()
     os.remove(f"{str(user_id)}.mp3")
 
-
-
-
 # bot.polling()
-
 def telegram_polling():
     try:
         bot.polling(none_stop=True, timeout=60) #constantly get messages from Telegram
