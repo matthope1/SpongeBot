@@ -115,6 +115,8 @@ def check_admin(func):
 
     user_is_admin, err_msg = is_admin(message.from_user.username)
 
+    print("user_is_admin",user_is_admin)
+
     if user_is_admin:
       result = func(*args, **kwargs)
       return result
@@ -123,9 +125,8 @@ def check_admin(func):
         bot.send_message(message.chat.id, f"{err_msg}")
       else:   
         bot.send_message(message.chat.id, f"You are not an admin, please contact sponge to gain admin access")
-    
+
   return wrap
-  
 
 def list_database():
   keys = db.keys()
@@ -136,7 +137,7 @@ def list_database():
 
 
 def is_admin(username):
-  # id admin needs to check how long since the user we are validating has been inside of the admin list
+  # is admin needs to check how long since the user we are validating has been inside of the admin list
   # we need to be able to check if a certain amount of time has passed to revoke admin status
 
   found = False
@@ -150,16 +151,16 @@ def is_admin(username):
   for user in raw_admin_list:
     if user['username'] == username:
       user_acc = user
-      found = True
+      found = True, 
 
   if found:
-    # def check_time_passed(dateTimeStr, hours):
     res = check_time_passed(user_acc['createdDate'], 3)
     # res = check_time_passed(user_acc['createdDate'], 0.001)
     if not res:
       # user is still admin
+      # FIXME: why does this not continue on to the requested function call
       print("user is still an admin, continue on to requested fuction call")
-      return True 
+      return True, 'noerr'
     else:
       raw_admin_list.remove(user_acc)
       print("raw admin list after removal", raw_admin_list)
@@ -170,7 +171,7 @@ def is_admin(username):
 
   else:
     print("not found")
-    return False
+    return False, 'You are not an admin'
 
 def is_game_master(userId):
   print("is game master called", userId)
@@ -217,6 +218,7 @@ def check_time_passed(dateTimeStr, hours):
 # TODO: 
 # add message handler for user to check how much time they have admin access for
 @bot.message_handler(commands=['time_left'])
+@check_admin
 def time_left(message):
   # get admin user object from database for user who sent message
   # calculate how much time is left before their admin priv expires
@@ -226,6 +228,7 @@ def time_left(message):
 
   raw_admin_list = ast.literal_eval(db.get_raw("adminList"))
 
+
   for user in raw_admin_list:
     print(f"{user['username']} == {username}")
     print(user['username'] == username)
@@ -234,7 +237,7 @@ def time_left(message):
       date_time_str = user['createdDate']
       print(f"date time str = {date_time_str}")
       # TODO: fix me
-      date_time_obj = datetime.datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')
+      date_time_obj = datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')
       print("before")
       print(date_time_obj)
       print("after")
@@ -251,6 +254,7 @@ def time_left(message):
 
 
 @bot.message_handler(commands=['add_admin'])
+@check_game_master
 def add_user_admin(message):
   # handler for adding admin level user in database
 
