@@ -3,6 +3,7 @@ import telebot
 import time
 import requests
 import ast
+import random
 from replit import db
 import asyncio
 from functools import wraps
@@ -190,7 +191,6 @@ def db_init():
   print("database initialization complete")
 
 def parse_chat_link(raw_link):
-  print("link: ",raw_link)
   parsed_link = raw_link.split('t.me/')
   chat_id = parsed_link[1]
   return chat_id
@@ -198,7 +198,6 @@ def parse_chat_link(raw_link):
 # checks if more time has passed than the hours argument
 # returns boolean (true if more time as passed)
 def check_time_passed(dateTimeStr, hours):
-  print("check time passed")
   dateTimeObj = datetime.strptime(dateTimeStr , '%d/%m/%y %H:%M:%S') 
   now = datetime.now()
   timeDiff = (now - dateTimeObj)
@@ -215,8 +214,8 @@ def check_time_passed(dateTimeStr, hours):
     return False
 
 
-# TODO: 
-# add message handler for user to check how much time they have admin access for
+# TODO: make it so that this function displays how much time is remaining on the users
+# admin access
 @bot.message_handler(commands=['time_left'])
 @check_admin
 def time_left(message):
@@ -284,9 +283,8 @@ def add_user_admin(message):
   except:
     bot.send_message(message.chat.id, f"There was an error while trying to add {username} to admin list")
 
-
 @bot.message_handler(commands=['dbInit'])
-@check_admin
+@check_game_master
 def db_init_handler(message):
   db_init()
 
@@ -366,6 +364,7 @@ def remove_group(message):
     bot.send_message(message.chat.id, f"There was an error while trying to remove group. Please try again or contact my creator")
 
 @bot.message_handler(commands=['add_group'])
+@check_admin
 def add_group(message):
   print("add group called")
 
@@ -388,6 +387,87 @@ def add_group(message):
   except:
     bot.send_message(message.chat.id, "There was an error while trying to add to your group list. Please try again or contact my creator")
 
+
+# shill raid/ leader
+# it would use a bunch of saved chat urls
+# it picks a random url, then itll say 3 2 1, and post one of these random urls
+
+# the users in that group will go to that group and post their shill text
+
+# leader text example: 
+
+# OK GUYS GET READY TO SHILL
+#  5 sec 
+# / shill or soft shill
+# 5 sec
+
+
+# TODO: create message handler to display all commands for this bot
+
+@bot.message_handler(commands=['commands', 'help'])
+def display_commands(message):
+
+  print("display commands called")
+
+  commands = (
+    f'/shill, /soft_shill \n'
+    f'/view_admins \n'
+    f'/message_all_groups \n'
+    f'/message_chat \n'
+    f'/time_left \n'
+    f'/view_groups \n'
+    f'/add_group \n'
+    f'/remove_group \n'
+    # f'/ \n'
+  )
+  
+  bot.send_message(message.chat.id, f"Spongebot has the following commands: \n {commands}")
+
+
+chaturls = ['https://t.me/testChannelspongey', 'https://t.me/Sponge_bot_testing', 'https://t.me/testChannelSpongey2']
+
+# TODO: create the auto shill bot
+@bot.message_handler(commands=['shill', 'soft_shill'])
+@check_admin
+def shill(message):
+  print("")
+  print("")
+  print("")
+  print("shill called", message)
+  print("")
+  print("")
+  print("")
+
+  # get random number
+  n = random.randint(0,len(chaturls) - 1)
+
+  print("n", n)
+
+  # use number to get random entry from the chat urls list
+  randomUrl = chaturls[n]
+
+  print("randomUrl", randomUrl)
+
+  # send chat url to the group 
+
+  if message.text == '/shill':
+    print("shill called")
+    bot.send_message(message.chat.id, "OK GUYS GET READY TO SHILL")
+    time.sleep(5)
+    bot.send_message(message.chat.id, f"POSTING THE RAID LINK IN 3...")
+    time.sleep(1)
+    bot.send_message(message.chat.id, f"POSTING THE RAID LINK IN 2...")
+    time.sleep(1)
+    bot.send_message(message.chat.id, f"POSTING THE RAID LINK IN 1...")
+    time.sleep(1)
+
+    bot.send_message(message.chat.id, f"GO! {randomUrl}")
+
+  elif message.text == '/soft_shill':
+    print("soft shill called")
+
+
+# TODO: test me
 @bot.message_handler(commands=['message_all_groups'])
 def message_all_groups(message):
   print("message all groups called")
@@ -409,12 +489,15 @@ def message_all_groups(message):
         telegram_api_url = f"https://api.telegram.org/bot{API_KEY}/sendMessage?chat_id=@{chat_id}&text={message_to_send}"
         # TODO: add error handling here
         # if message request to the api fails, send message back to user saying that there was an issue sending message to this group
-        tel_resp = requests.get(telegram_api_url)
+        try: 
+          tel_resp = requests.get(telegram_api_url)
+          if not tel_resp: 
+            bot.send_message(message.chat.id, f"There was an issue sending a message to {chat_link}")
 
-        # TODO: test what happens when the message fails
-        # what happens when that group doesn't exist
-        if not tel_resp: 
-          bot.send_message(message.chat.id, f"There was an issue sending a message to{chat_link}")
+        except: 
+          # TODO: test what happens when the message fails
+          # what happens when that group doesn't exist
+          bot.send_message(message.chat.id, f"There was an issue sending a message to {chat_link}")
     
   except:
     bot.send_message(message.chat.id, "There was an error while trying to send a message to all groups. Please try again or contact my creator")
