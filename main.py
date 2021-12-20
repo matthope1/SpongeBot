@@ -12,6 +12,7 @@ from pytube import YouTube
 import json
 from messages import *
 
+
 from web3 import Web3
 import time, json
 
@@ -34,6 +35,57 @@ from datetime import datetime
 
 # How to interact with bsc
 # https://paohuee.medium.com/interact-binance-smart-chain-using-python-4f8d745fe7b7
+
+
+
+'''
+https://t.me/overdose_gems_group
+
+http://t.me/InfinityGainzz (http://t.me/InfinityGainzz)
+
+https://t.me/DeFiRaccoons
+
+https://t.me/cryptodakurobinhooders
+
+https://t.me/gamblebsc
+
+https://t.me/LBank_en
+
+https://t.me/spongegems
+
+https://t.me/Crypto_Talkzs
+
+https://t.me/pressed4coinsnew
+
+https://t.me/moonhunters
+
+https://t.me/SSBtalk
+
+https://t.me/DeFiApeTalk
+
+https://t.me/Pharrells_Whales
+
+https://t.me/BitSquad
+ (https://t.me/BitSquad)
+https://t.me/AMA_Central
+
+https://t.me/ProdsLounge
+ (https://t.me/ProdsLounge)
+https://t.me/icospeaks
+
+https://t.me/ROGERthegreat
+
+https://t.me/satoshistreetbets
+ (https://t.me/satoshistreetbets)
+https://t.me/de_fi
+
+https://t.me/GKsGems
+
+https://t.me/rektsfamily
+
+https://t.me/cryptoscavengergroup
+
+'''
 
 
 '''
@@ -127,16 +179,29 @@ contract SpongeBotPayment {
 }
 '''
 
-bsc = "https://bsc-dataseed.binance.org/"
+# BSC SC connection setup
+  
+# MAINNET
+# bsc = "https://bsc-dataseed.binance.org/"
 
 bscTest = "https://data-seed-prebsc-1-s1.binance.org:8545/"
-  
+
 web3 = Web3(Web3.HTTPProvider(bscTest))
 print(web3.isConnected())
 
-
 contract_abi =  json.loads(""" 
 [
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_secondaryOwner",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
 	{
 		"anonymous": false,
 		"inputs": [
@@ -170,14 +235,16 @@ contract_abi =  json.loads("""
 				"internalType": "string",
 				"name": "username",
 				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
 			}
 		],
 		"name": "UserPaid",
 		"type": "event"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "fallback"
 	},
 	{
 		"inputs": [],
@@ -194,14 +261,8 @@ contract_abi =  json.loads("""
 	},
 	{
 		"inputs": [],
-		"name": "greet",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
+		"name": "onlyPrimaryOwner",
+		"outputs": [],
 		"stateMutability": "view",
 		"type": "function"
 	},
@@ -219,44 +280,85 @@ contract_abi =  json.loads("""
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "primaryOwner",
+		"outputs": [
+			{
+				"internalType": "address payable",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "secondaryOwner",
+		"outputs": [
+			{
+				"internalType": "address payable",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "withdraw",
+		"outputs": [],
 		"stateMutability": "payable",
-		"type": "receive"
+		"type": "function"
 	}
 ]
- """)
+""")
 
 
-contract_address = '0xfE865D9Ce6F9A5550aaf81e8ee629859Cd439942'
-
+contract_address = '0x909b6D4398a8206eCaD60ed6535eeDD508C45215'
 contract = web3.eth.contract(address=contract_address, abi=contract_abi)
 
-# myContract.events.UserPaid().processReceipt(receipt)
+
+# SC event loop and handler
+def handle_event(event):
+  eventDict = json.loads(web3.toJSON(event))
+  eventName = eventDict['event']
+
+  if eventName == "UserPaid":
+    print("user paid event")
+
+    username = eventDict['args']['username']
+    value = eventDict['args']['value']
+
+    print("username", username)
+    print("value",value)
+
+  return json.loads(web3.toJSON(event)) 
+
+def log_loop(event_filter, poll_interval):
+  while True:
+    for contractEvent in event_filter.get_new_entries():
+      handle_event(contractEvent)
+    time.sleep(poll_interval)
 
 
-# address = "0x772E8A12A8374A4d070538Ea920A4339Bb0959e7" 
+# SC testing 
+
 address = "0x772E8A12A8374A4d070538Ea920A4339Bb0959e7" 
-
 balance = web3.eth.get_balance(address)
 print(balance)
  
 result = web3.fromWei(balance,"ether")
 print(result)
 
-
-def handle_event(event):
-  print("event!!!!!")
-  print(web3.toJSON(event))
-
-def log_loop(event_filter, poll_interval):
-  while True:
-    for UserPaid in event_filter.get_new_entries():
-      handle_event(UserPaid)
-    time.sleep(poll_interval)
-
-# SC TESTING ENDS 
-
-# BOT BEGINS
-
+# Sponge Bot
 API_KEY = os.getenv('API_KEY')
 bot = telebot.TeleBot(API_KEY)
 
@@ -335,6 +437,10 @@ def is_admin(username):
       found = True, 
 
   if found:
+    # TODO: get this user from the database (add get user util function)
+    # then for check_time_passed, pass in user_admin_time
+    
+
     res = check_time_passed(user_acc['createdDate'], 3)
     # res = check_time_passed(user_acc['createdDate'], 0.001)
     if not res:
@@ -431,11 +537,49 @@ def time_left(message):
 
       bot.send_message(message.chat.id, f"Looks like you ran out of time")
 
+# internal function for adding user to admin list
+
+
+# takes in username with no @ symbol
+def admin_exists(username):
+  return any(d['username'] == username for d in db["adminList"])
+
+def add_user_admin(username, timeLimit):
+  # TODO: add this user to admin list 
+
+  if '@' not in username:
+    # warning: this will fail if the function is called with a username like this: 
+    # test@me
+    print("incorrect username format")
+    return 
+
+  username = username.split('@')[1].strip()
+  createdDate = datetime.now().strftime('%d/%m/%y %H:%M:%S')
+
+  new_admin = {
+    "username": username,
+    "createdData": createdDate
+  }
+
+  try: 
+    if not admin_exists(username):
+      # append copy of dict to create new ref
+      db["adminList"].append(new_admin.copy())
+
+      if admin_exists(username): 
+        print("user sucessfully added to the admin list")
+
+    else:
+      print("user is already an admin")
+  except:
+    print("add admin failure")
+
 
 @bot.message_handler(commands=['add_admin'])
 @check_game_master
-def add_user_admin(message):
+def add_user_admin_handler(message):
   # handler for adding admin level user in database
+
 
   # check if username is given in correct format
   if '@' not in message.text:
@@ -445,17 +589,22 @@ def add_user_admin(message):
   username = message.text.split('@')[1].strip()
   createdDate = datetime.now().strftime('%d/%m/%y %H:%M:%S')
 
+  # TODO: add admin_time_limit
+  # TODO: in check user admin function, check against this admin_time limit key
+  # admin_time_limit should be in hours (float)
+
   new_admin = {
     "username" : username,
     "createdDate": createdDate 
   }
 
   try:
-    if not any(d['username'] == username for d in db["adminList"]):
+    # if not any(d['username'] == username for d in db["adminList"]):
+    if not admin_exists(username):
       # append copy of dict to create new ref
       db["adminList"].append(new_admin.copy())
   
-      if any(d['username'] == username for d in db["adminList"]):
+      if admin_exists(username):
         bot.send_message(message.chat.id, f"{username} was sucessfully added to your admin list")
     else:
       bot.send_message(message.chat.id, f"This user is already an admin")
@@ -785,19 +934,6 @@ def telegram_polling():
       worker.start()
   
       bot.polling(none_stop=True, timeout=60) #constantly get messages from Telegram
-
-      # loop = asyncio.get_event_loop()
-      # try:
-      #     print("trying loop")
-      #     loop.run_until_complete(
-      #         asyncio.gather(
-      #             log_loop(event_filter, 2)))
-      #             # log_loop(block_filter, 2),
-      #             # log_loop(tx_filter, 2)))
-      # finally:
-      #     # close loop to free up system resources
-      #     loop.close()
-
 
     except:
 
