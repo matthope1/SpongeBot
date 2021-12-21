@@ -340,6 +340,14 @@ def handle_event(event):
     print("username", username)
     print("value",value)
 
+    # add user to admin list based on the amount of value included on that
+    # transaction
+
+    # heres how the pricing model works
+    # .15 bnb / hour
+    # one .3 discount for 6 or more hours
+    # 7
+
   return json.loads(web3.toJSON(event)) 
 
 def log_loop(event_filter, poll_interval):
