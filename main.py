@@ -39,9 +39,70 @@ from datetime import datetime
 
 
 '''
+https://t.me/lambowhales
+https://t.me/uniswaptrollbox
+https://t.me/uniswapbombsgroup
+https://t.me/uniswap_talk
+https://t.me/Pumpchads
+https://t.me/CaptainJackApeGroup
+https://t.me/defishillers
+https://t.me/supergemhunter
+https://t.me/cryptocrusaderkings
+https://t.me/CryptoMafiaCommunityPH
+https://t.me/UnknownCalls
+https://t.me/VehxysGEMS
+https://t.me/CryptoHunterz1
+https://t.me/cryptomobz
+https://t.me/CryptoM00NShots
+https://t.me/themoonboyschat
+https://t.me/AngoraCatToken
+https://t.me/validcryptolinks
+https://t.me/spacegems
+https://t.me/uniswapgemsv2
+https://t.me/FlokiShinuBSC
+https://t.me/poocoinshill
+https://t.me/DegenLounge
+https://t.me/BSCBUNNYS
+https://t.me/BscGems007
+https://t.me/bscmoonz
+https://t.me/BSCStreetBetsCaptain
+https://t.me/BSC_Degens
+https://t.me/BSC_CHINA
+https://t.me/BAOchina
+https://t.me/supereotChina
+https://t.me/whaleturkeyyy
+https://t.me/theshilling
+https://t.me/theshillingqueencalls
+https://t.me/OfficialShampooLounge
+https://t.me/AMA_Station
+https://t.me/DoctorsOfficeBSC
+https://t.me/Zachspenaltybox
+https://t.me/thediamondhodlers
+https://t.me/defigemchatt
+https://t.me/DeFiApeTalk
+https://t.me/wiseaps
+https://t.me/wiseapess
+https://t.me/wiseapeschat
+https://t.me/pressed4coins
+https://t.me/RugOrRiches
+https://t.me/TradingBenjaminClub
+https://t.me/MuskFalcon9
+https://t.me/VultureShills
+https://t.me/King_Of_Fomoo
+https://t.me/cryptodakurobinhooders
+https://t.me/bigmommagems
+https://t.me/BigPoppaRaids
+@Satoshistreetbets 
+@satoshistreetgroup
+@SSBtalk 
+@psecrypt0lounge
+'''
+
+
+'''
 https://t.me/overdose_gems_group
 
-http://t.me/InfinityGainzz (http://t.me/InfinityGainzz)
+http://t.me/InfinityGainzz 
 
 https://t.me/DeFiRaccoons
 
@@ -66,17 +127,17 @@ https://t.me/DeFiApeTalk
 https://t.me/Pharrells_Whales
 
 https://t.me/BitSquad
- (https://t.me/BitSquad)
+
 https://t.me/AMA_Central
 
 https://t.me/ProdsLounge
- (https://t.me/ProdsLounge)
+
 https://t.me/icospeaks
 
 https://t.me/ROGERthegreat
 
 https://t.me/satoshistreetbets
- (https://t.me/satoshistreetbets)
+
 https://t.me/de_fi
 
 https://t.me/GKsGems
@@ -102,7 +163,7 @@ the users in that group will go to that group and post their shill text
 leader text example: 
 
 OK GUYS GET READY TO SHILL
- 5 sec 
+5 sec 
 / shill or soft shill
 5 sec
 
@@ -142,229 +203,252 @@ the user will gain access to the bot for the amount of time that they paid for
 Then the bot can also DM sponge after this and let them know which user 
 just paid for bot access
 
-
 How to make sure this scales?
-
-
-
-
-
-WHOOOOH CONTRACT:
-
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
-
-
-contract SpongeBotPayment {
-    string public greet = "Hello World!";
-
-    event Deposit(address indexed sender, uint amount, uint balance);
-    event UserPaid(string username);
-
-    function pay(string memory _username) public payable {
-        emit UserPaid(_username);
-    }
-
-    // Function to receive Ether. msg.data must be empty
-    receive() external payable {
-        emit Deposit(msg.sender, msg.value, address(this).balance);
-    }
-
-    // Fallback function is called when msg.data is not empty
-    fallback() external payable {}
-
-    function getBalance() public view returns (uint) {
-        return address(this).balance;
-    }
-}
 '''
 
-# BSC SC connection setup
-  
 # MAINNET
 # bsc = "https://bsc-dataseed.binance.org/"
 
 bscTest = "https://data-seed-prebsc-1-s1.binance.org:8545/"
-
 web3 = Web3(Web3.HTTPProvider(bscTest))
 print(web3.isConnected())
 
+address = "0x772E8A12A8374A4d070538Ea920A4339Bb0959e7" 
+balance = web3.eth.get_balance(address)
+print(balance)
+
+result = web3.fromWei(balance,"ether")
+print(result)
+
+# BSC SC connection setup
+  
+
+
+# SC testing 
+
+
 contract_abi =  json.loads(""" 
 [
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_secondaryOwner",
-				"type": "address"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "balance",
-				"type": "uint256"
-			}
-		],
-		"name": "Deposit",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "username",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "UserPaid",
-		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "getBalance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "onlyPrimaryOwner",
-		"outputs": [],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_username",
-				"type": "string"
-			}
-		],
-		"name": "pay",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "primaryOwner",
-		"outputs": [
-			{
-				"internalType": "address payable",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "secondaryOwner",
-		"outputs": [
-			{
-				"internalType": "address payable",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_amount",
-				"type": "uint256"
-			}
-		],
-		"name": "withdraw",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	}
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_secondaryOwner",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_username",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_hours",
+        "type": "uint256"
+      }
+    ],
+    "name": "UserPaid",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "getAllPayments",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "_username",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "_user",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_timestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_value",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_hours",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct SpongeBotPayment.PayInfo[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "onlyPrimaryOwner",
+    "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_username",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_hours",
+        "type": "uint256"
+      }
+    ],
+    "name": "pay",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "primaryOwner",
+    "outputs": [
+      {
+        "internalType": "address payable",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "secondaryOwner",
+    "outputs": [
+      {
+        "internalType": "address payable",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
 ]
 """)
 
-
-contract_address = '0x909b6D4398a8206eCaD60ed6535eeDD508C45215'
+contract_address = '0x6B9A81410ad1eD32e2Aa6AdB5F1E9BDCA67F9578'
 contract = web3.eth.contract(address=contract_address, abi=contract_abi)
-
 
 # SC event loop and handler
 def handle_event(event):
+
+  print('event', event)
   eventDict = json.loads(web3.toJSON(event))
+
+  print("eventDict", eventDict)
+  print(" ")
+  print(" ")
+  print(" ")
+  print(" ")
+
   eventName = eventDict['event']
+
+  print("event name", eventName)
+  print(" ")
+  print(" ")
+  print(" ")
+  print(" ")
 
   if eventName == "UserPaid":
     print("user paid event")
 
-    username = eventDict['args']['username']
-    value = eventDict['args']['value']
+    username = eventDict['args']['_username']
+    value = eventDict['args']['_value']
+    hours = eventDict['args']['_hours']
 
     print("username", username)
-    print("value",value)
+    print("value", value)
+    print("hours", hours)
 
     # add user to admin list based on the amount of value included on that
     # transaction
+
+    print("adding user to admin from front end call")
+    add_user_admin(username, hours)
 
     # heres how the pricing model works
     # .15 bnb / hour
     # one .3 discount for 6 or more hours
     # 7
 
-  return json.loads(web3.toJSON(event)) 
+  return eventDict
 
 def log_loop(event_filter, poll_interval):
   while True:
     for contractEvent in event_filter.get_new_entries():
       handle_event(contractEvent)
     time.sleep(poll_interval)
-
-
-# SC testing 
-
-address = "0x772E8A12A8374A4d070538Ea920A4339Bb0959e7" 
-balance = web3.eth.get_balance(address)
-print(balance)
- 
-result = web3.fromWei(balance,"ether")
-print(result)
 
 # Sponge Bot
 API_KEY = os.getenv('API_KEY')
@@ -389,25 +473,28 @@ def check_game_master(func):
     else:
       bot.send_message(message.chat.id, f"You are not the game master.")
       return
-
   return wrap
 
 def check_admin(func):
   '''Decorator that reports the execution time.'''
-
   def wrap(*args, **kwargs):
+    print("check admin called")
     message = args[0]
     id = message.from_user.id
 
+    print("before is admin call")
+    # TODO: FIX ME
     user_is_admin, err_msg = is_admin(message.from_user.username)
 
+    print("after is admin call")
+  
     # if message is from sponge
     if id == 1054822819:
       print("command is from sponge")
       user_is_admin = True 
-
+  
     print("user_is_admin",user_is_admin)
-
+  
     if user_is_admin:
       result = func(*args, **kwargs)
       return result
@@ -416,9 +503,9 @@ def check_admin(func):
         bot.send_message(message.chat.id, f"{err_msg}")
       else:   
         bot.send_message(message.chat.id, f"You are not an admin, please contact sponge to gain admin access")
-
+        
   return wrap
-
+  
 def list_database():
   keys = db.keys()
 
@@ -428,8 +515,9 @@ def list_database():
 
 
 def is_admin(username):
-  # is admin needs to check how long since the user we are validating has been inside of the admin list
-  # we need to be able to check if a certain amount of time has passed to revoke admin status
+  # get user object from db
+  # check amount of time passed since they've been granted admin access
+  # compare to the amount of time they paid for
 
   found = False
   user_acc = ''
@@ -447,9 +535,16 @@ def is_admin(username):
   if found:
     # TODO: get this user from the database (add get user util function)
     # then for check_time_passed, pass in user_admin_time
-    
 
-    res = check_time_passed(user_acc['createdDate'], 3)
+    admin_time = user['adminTime']
+    print("admin time", admin_time)
+    
+    time_as_admin = 3
+    print("createdDate", user_acc['createdDate'])
+    print("time as admin", time_as_admin)
+
+    res = check_time_passed(user_acc['createdDate'], admin_time)
+
     # res = check_time_passed(user_acc['createdDate'], 0.001)
     if not res:
       # user is still admin
@@ -462,7 +557,7 @@ def is_admin(username):
       db['adminList'] = raw_admin_list
       print("user ran out of admin time")
       # TODO: add name of buy time command
-      return False, 'Sorry! Your time as admin has ran out, please purchase more time with {PLACE BUY TIME CMD HERE}'
+      return False, 'Sorry! Your time as admin has ran out, please purchase more time at the Sponge Bot Payment Portal'
 
   else:
     print("not found")
@@ -552,8 +647,11 @@ def time_left(message):
 def admin_exists(username):
   return any(d['username'] == username for d in db["adminList"])
 
-def add_user_admin(username, timeLimit):
-  # TODO: add this user to admin list 
+def add_user_admin(username, adminTimeHours):
+  print("add user admin called")
+  if username[0] != '@':
+    print("incorrect username format!")
+    return
 
   if '@' not in username:
     # warning: this will fail if the function is called with a username like this: 
@@ -566,7 +664,8 @@ def add_user_admin(username, timeLimit):
 
   new_admin = {
     "username": username,
-    "createdData": createdDate
+    "createdDate": createdDate,
+    "adminTime": adminTimeHours
   }
 
   try: 
@@ -603,7 +702,8 @@ def add_user_admin_handler(message):
 
   new_admin = {
     "username" : username,
-    "createdDate": createdDate 
+    "createdDate": createdDate,
+    "adminTime": 3,
   }
 
   try:
@@ -767,6 +867,10 @@ chaturls = ['https://t.me/testChannelspongey', 'https://t.me/Sponge_bot_testing'
 @bot.message_handler(commands=['shill', 'soft_shill'])
 @check_admin
 def shill(message):
+  print("shill called")
+
+  LOOP_TIMER = 30
+
   print("")
   print("")
   print("")
@@ -932,10 +1036,7 @@ async def song(client, message):
 
 # bot.polling()
 def telegram_polling():
-    print("telegram polling called")
-
     try:
-
       event_filter = contract.events.UserPaid.createFilter(fromBlock='latest')
   
       worker = Thread(target=log_loop, args=(event_filter, 2), daemon=True)
