@@ -95,7 +95,7 @@ https://t.me/BigPoppaRaids
 @Satoshistreetbets 
 @satoshistreetgroup
 @SSBtalk 
-@psecrypt0lounge
+@psecrypt0lounge  
 '''
 
 
@@ -211,21 +211,16 @@ How to make sure this scales?
 
 bscTest = "https://data-seed-prebsc-1-s1.binance.org:8545/"
 web3 = Web3(Web3.HTTPProvider(bscTest))
-print(web3.isConnected())
+# print(web3.isConnected())
 
 address = "0x772E8A12A8374A4d070538Ea920A4339Bb0959e7" 
 balance = web3.eth.get_balance(address)
-print(balance)
+# print(balance)
 
 result = web3.fromWei(balance,"ether")
-print(result)
+# print(result)
 
-# BSC SC connection setup
-  
-
-
-# SC testing 
-
+# SC connection setup 
 
 contract_abi =  json.loads(""" 
 [
@@ -397,8 +392,35 @@ contract_abi =  json.loads("""
 ]
 """)
 
+
+# TODO: add logging for errors
+
 contract_address = '0x6B9A81410ad1eD32e2Aa6AdB5F1E9BDCA67F9578'
 contract = web3.eth.contract(address=contract_address, abi=contract_abi)
+
+def handle_user_paid(eventDict):
+  username = eventDict['args']['_username']
+  value = eventDict['args']['_value']
+  hours = eventDict['args']['_hours']
+
+  print("username", username)
+  print("value", value)
+  print("hours", hours)
+
+  # add user to admin list based on the amount of value included on that
+  # transaction
+
+  # TODO: verify that the amouount included in the transaction is
+  # valid to our pay rate
+
+  print("adding user to admin from front end call")
+  add_user_admin(username, hours)
+
+  # heres how the pricing model works
+  # .15 bnb / hour
+  # one .3 discount for 6 or more hours
+  # 7
+
 
 # SC event loop and handler
 def handle_event(event):
@@ -407,58 +429,45 @@ def handle_event(event):
   eventDict = json.loads(web3.toJSON(event))
 
   print("eventDict", eventDict)
-  print(" ")
-  print(" ")
-  print(" ")
-  print(" ")
 
   eventName = eventDict['event']
 
-  print("event name", eventName)
-  print(" ")
-  print(" ")
-  print(" ")
-  print(" ")
-
   if eventName == "UserPaid":
     print("user paid event")
-
-    username = eventDict['args']['_username']
-    value = eventDict['args']['_value']
-    hours = eventDict['args']['_hours']
-
-    print("username", username)
-    print("value", value)
-    print("hours", hours)
-
-    # add user to admin list based on the amount of value included on that
-    # transaction
-
-    print("adding user to admin from front end call")
-    add_user_admin(username, hours)
-
-    # heres how the pricing model works
-    # .15 bnb / hour
-    # one .3 discount for 6 or more hours
-    # 7
-
+    handle_user_paid(event)
   return eventDict
 
 def log_loop(event_filter, poll_interval):
-  while True:
-    for contractEvent in event_filter.get_new_entries():
-      handle_event(contractEvent)
-    time.sleep(poll_interval)
+  try: 
+    while True:
+      for contractEvent in event_filter.get_new_entries():
+        handle_event(contractEvent)
+      time.sleep(poll_interval)   
+  except:
+    print("Log loop error exception")
+
 
 # Sponge Bot
 API_KEY = os.getenv('API_KEY')
 bot = telebot.TeleBot(API_KEY)
 
-
 chat_id = 'Sponge_bot_testing'
 
 print("Sponge bot running...")
 
+# DECORATORS
+
+def background(f):
+  def wrap(*args, **kwargs):
+    try: 
+      # TODO: read asyncio docs
+      loop = asyncio.new_event_loop()
+      asyncio.set_event_loop(loop)
+      this = asyncio.get_event_loop().run_in_executor(None, f, *args, **kwargs)
+    except Exception as e:
+      print("background decorator error:", e)
+    return this
+  return wrap
 
 def check_game_master(func):
   '''Decorator that reports the execution time.'''
@@ -482,18 +491,13 @@ def check_admin(func):
     message = args[0]
     id = message.from_user.id
 
-    print("before is admin call")
     # TODO: FIX ME
     user_is_admin, err_msg = is_admin(message.from_user.username)
-
-    print("after is admin call")
   
     # if message is from sponge
     if id == 1054822819:
       print("command is from sponge")
       user_is_admin = True 
-  
-    print("user_is_admin",user_is_admin)
   
     if user_is_admin:
       result = func(*args, **kwargs)
@@ -512,6 +516,36 @@ def list_database():
   for key in keys:
     current_val = db[key]
     print(f"key {key} | value {current_val}")
+  
+def update_admin_shill_group(username, chat_id):
+  try: 
+    user_index = get_user(username)
+
+    if user_index != -1:
+      db["adminList"][user_index]["shillGroup"] = chat_id
+
+  except Exception as e:
+    print("update admin shill group error", e)
+
+
+def delete_user(username):
+  # TODO: delete user
+  return -1 
+
+def get_user(username):
+  # returns position of user in admin list
+
+  found = -1
+  try: 
+    # for user in raw_admin_list:
+    for i in range(len(db["adminList"])):
+      if db["adminList"][i]["username"] == username:
+        found = i
+        break
+
+    return found
+  except Exception as e:
+    print("update admin shill group error", e)
 
 
 def is_admin(username):
@@ -525,6 +559,8 @@ def is_admin(username):
   # if any(d['username'] == username for d in db["adminList"]):
   # also check if time past is less than some alotted time 
 
+
+  # TODO: use get user function
   raw_admin_list = ast.literal_eval(db.get_raw("adminList"))
 
   for user in raw_admin_list:
@@ -615,7 +651,6 @@ def time_left(message):
   username = message.from_user.username
 
   raw_admin_list = ast.literal_eval(db.get_raw("adminList"))
-
 
   for user in raw_admin_list:
     print(f"{user['username']} == {username}")
@@ -861,68 +896,202 @@ def display_commands(message):
   bot.send_message(message.chat.id, f"Spongebot has the following commands: \n {commands}")
 
 
-chaturls = ['https://t.me/testChannelspongey', 'https://t.me/Sponge_bot_testing', 'https://t.me/testChannelSpongey2']
+# chaturls = ['https://t.me/testChannelspongey', 'https://t.me/Sponge_bot_testing', 'https://t.me/testChannelSpongey2']
 
-# TODO: create the auto shill bot
-@bot.message_handler(commands=['shill', 'soft_shill'])
-@check_admin
-def shill(message):
-  print("shill called")
 
-  LOOP_TIMER = 30
+hard_shill_urls = ['https://t.me/lambowhales',
+'https://t.me/uniswaptrollbox',
+'https://t.me/uniswapbombsgroup',
+'https://t.me/uniswap_talk',
+'https://t.me/Pumpchads',
+'https://t.me/CaptainJackApeGroup',
+'https://t.me/defishillers',
+'https://t.me/supergemhunter',
+'https://t.me/cryptocrusaderkings',
+'https://t.me/CryptoMafiaCommunityPH',
+'https://t.me/UnknownCalls',
+'https://t.me/VehxysGEMS',
+'https://t.me/CryptoHunterz1',
+'https://t.me/cryptomobz',
+'https://t.me/CryptoM00NShots',
+'https://t.me/themoonboyschat',
+'https://t.me/AngoraCatToken',
+'https://t.me/validcryptolinks',
+'https://t.me/spacegems',
+'https://t.me/uniswapgemsv2',
+'https://t.me/FlokiShinuBSC',
+'https://t.me/poocoinshill',
+'https://t.me/DegenLounge',
+'https://t.me/BSCBUNNYS',
+'https://t.me/BscGems007',
+'https://t.me/bscmoonz',
+'https://t.me/BSCStreetBetsCaptain',
+'https://t.me/BSC_Degens',
+'https://t.me/BSC_CHINA',
+'https://t.me/BAOchina',
+'https://t.me/supereotChina',
+'https://t.me/whaleturkeyyy',
+'https://t.me/theshilling',
+'https://t.me/theshillingqueencalls',
+'https://t.me/OfficialShampooLounge',
+'https://t.me/AMA_Station',
+'https://t.me/DoctorsOfficeBSC',
+'https://t.me/Zachspenaltybox',
+'https://t.me/thediamondhodlers',
+'https://t.me/defigemchatt',
+'https://t.me/DeFiApeTalk',
+'https://t.me/wiseaps',
+'https://t.me/wiseapess',
+'https://t.me/wiseapeschat',
+'https://t.me/pressed4coins',
+'https://t.me/RugOrRiches',
+'https://t.me/TradingBenjaminClub',
+'https://t.me/MuskFalcon9',
+'https://t.me/VultureShills',
+'https://t.me/King_Of_Fomoo',
+'https://t.me/cryptodakurobinhooders',
+'https://t.me/bigmommagems',
+'https://t.me/BigPoppaRaids',
+'@Satoshistreetbets ',
+'@satoshistreetgroup',
+'@SSBtalk ',
+'@psecrypt0lounge ',
+]
 
-  print("")
-  print("")
-  print("")
-  print("shill called", message)
-  print("")
-  print("")
-  print("")
+soft_shill_urls = ['https://t.me/overdose_gems_group',
+'http://t.me/InfinityGainzz',
+'https://t.me/DeFiRaccoons',
+'https://t.me/cryptodakurobinhooders',
+'https://t.me/gamblebsc',
+'https://t.me/LBank_en',
+'https://t.me/spongegems',
+'https://t.me/Crypto_Talkzs',
+'https://t.me/pressed4coinsnew',
+'https://t.me/moonhunters',
+'https://t.me/SSBtalk',
+'https://t.me/DeFiApeTalk',
+'https://t.me/Pharrells_Whales',
+'https://t.me/BitSquad',
+'https://t.me/AMA_Central',
+'https://t.me/ProdsLounge',
+'https://t.me/icospeaks',
+'https://t.me/ROGERthegreat',
+'https://t.me/satoshistreetbets',
+'https://t.me/de_fi',
+'https://t.me/GKsGems',
+'https://t.me/rektsfamily',
+'https://t.me/cryptoscavengergroup']
 
-  # get random number
-  n = random.randint(0,len(chaturls) - 1)
+@background
+def send_hard_shill(chat_id):
+  # TODO: figure out how to stop loop with a bot command
+  print("Hard shill called")
+  HARD_SHILL_LOOP_TIME = 60
 
-  print("n", n)
 
-  # use number to get random entry from the chat urls list
-  randomUrl = chaturls[n]
 
-  print("randomUrl", randomUrl)
+  i = 0
+  loop = True
 
-  # send chat url to the group 
+  while loop:
+    if i == 3:
+      print("i = 3")
+      loop = False
+      break
 
-  if message.text == '/shill':
-    print("shill called")
+    # get random number
+    n = random.randint(0,len(hard_shill_urls) - 1)
+  
+    # use number to get random entry from the chat urls list
+    randomUrl = hard_shill_urls[n]
+  
+    bot.send_message(chat_id, "EVERYONE COPY THE HARDSHILL TEXT FROM ROSE!")
+    bot.send_message(chat_id, "/shill /hardshill /template")
+    time.sleep(2)
+  
+    bot.send_message(chat_id, "OK GUYS GET READY TO SHILL")
+    time.sleep(5)
+    bot.send_message(chat_id, f"POSTING THE RAID LINK IN 3...")
+    time.sleep(1)
+    bot.send_message(chat_id, f"2...")
+    time.sleep(1)
+    bot.send_message(chat_id, f"1...")
+    time.sleep(1)
+  
+    bot.send_message(chat_id, f"GO! {randomUrl}")
 
-    bot.send_message(message.chat.id, "EVERYONE COPY THE HARDSHILL TEXT FROM ROSE!")
-    bot.send_message(message.chat.id, "/hardshill")
+    time.sleep(HARD_SHILL_LOOP_TIME)
+    i = i + 1
+
+@background
+def send_soft_shill(chat_id):
+  # TODO: figure out how to stop loop with a bot command
+
+  SOFT_SHILL_LOOP = 35
+
+  bot.send_message(chat_id, "Soft shilling is: talking about the project in a casual manner that may not come off as shilling to people who aren’t aware of what shilling is")
+
+  i = 0
+  loop = True
+
+  while loop:
+    if i == 3:
+      print("i = 3")
+      loop = False
+      break
+
+    # get random number
+    n = random.randint(0,len(soft_shill_urls) - 1)
+  
+    # use number to get random entry from the chat urls list
+    randomUrl = soft_shill_urls[n]
+
     time.sleep(2)
 
-    bot.send_message(message.chat.id, "OK GUYS GET READY TO SHILL")
+    bot.send_message(chat_id, "OK GUYS GET READY TO SHILL")
     time.sleep(5)
-    bot.send_message(message.chat.id, f"POSTING THE RAID LINK IN 3...")
+    bot.send_message(chat_id, f"POSTING THE RAID LINK IN 3...")
     time.sleep(1)
-    bot.send_message(message.chat.id, f"2...")
+    bot.send_message(chat_id, f"2...")
     time.sleep(1)
-    bot.send_message(message.chat.id, f"1...")
+    bot.send_message(chat_id, f"1...")
     time.sleep(1)
 
-    bot.send_message(message.chat.id, f"GO! {randomUrl}")
+    bot.send_message(chat_id, f"GO! {randomUrl}")
 
-    # TODO: when the shilling starts, the bot should continually go through a list of groups
-    # and post a new group every 2 - 5 mins
-    # the admins should be able to skip a group and go onto the next posting
-    # in the case that the chat is locked and users cant raid the chat
+    time.sleep(SOFT_SHILL_LOOP)
+    i = i + 1
 
-    # TODO: add the bi
 
-  elif message.text == '/soft_shill':
-    print("soft shill called")
-    bot.send_message(message.chat.id, "OK GUYS GET READY TO SOFT SHILL")
-    bot.send_message(message.chat.id, "Soft shilling is: talking about the project in a casual manor that may not come off as shilling to people who aren’t aware of what shilling is")
-    
-    # TODO: Post the groups
-    # alright guys 
+@bot.message_handler(commands=['hard_shill', 'soft_shill'])
+@check_admin
+def shill(message):
+  # check if admin has shill group
+  # if admin has a shill group, don't allow them to call this func
+
+  try:
+    username = message.from_user.username
+    chat_id = message.chat.id
+    user_id = get_user(username)
+
+    shill_group = db['adminList'][user_id]['shillGroup']
+
+    if shill_group and shill_group != chat_id:
+      bot.send_message(chat_id, f"You cannot use Sponge Bot in more than one group, after your current admin session is over, buy more hours to use Sponge Bot in another group")
+      return 
+
+    if not shill_group:   
+      bot.send_message(chat_id, f"Your shill group will now be set to the group you have sent this command from")
+      update_admin_shill_group(username, chat_id)
+  
+    if message.text == '/hard_shill':
+      send_hard_shill(message.chat.id)
+  
+    elif message.text == '/soft_shill':
+      send_soft_shill(message.chat.id) 
+  except Exception as e:
+    print("shill error: ", e)
+
 
 # TODO: test me
 @bot.message_handler(commands=['message_all_groups'])
@@ -987,7 +1156,6 @@ def packages(message):
 
 
 # TODO: 
-
 def yt_search(song):
   videosSearch = VideosSearch(song, limit=1)
   result = videosSearch.result()
@@ -1038,7 +1206,9 @@ async def song(client, message):
 def telegram_polling():
     try:
       event_filter = contract.events.UserPaid.createFilter(fromBlock='latest')
-  
+
+      # asyncio.run(main()) 
+
       worker = Thread(target=log_loop, args=(event_filter, 2), daemon=True)
       worker.start()
   
