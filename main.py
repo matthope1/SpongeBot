@@ -400,26 +400,32 @@ contract = web3.eth.contract(address=contract_address, abi=contract_abi)
 
 def handle_user_paid(eventDict):
   username = eventDict['args']['_username']
-  value = eventDict['args']['_value']
-  hours = eventDict['args']['_hours']
+  value = float(eventDict['args']['_value']) 
+  hours = float(eventDict['args']['_hours'])
 
   print("username", username)
   print("value", value)
   print("hours", hours)
 
-  # add user to admin list based on the amount of value included on that
-  # transaction
+  ONE_BNB = 1000000000000000000
+  PRICE_PER_HOUR = .2 
 
-  # TODO: verify that the amouount included in the transaction is
-  # valid to our pay rate
+  valid_value = int(float((ONE_BNB * PRICE_PER_HOUR) * hours))
 
-  print("adding user to admin from front end call")
-  add_user_admin(username, hours)
+  if hours >= 6:
+    valid_value = valid_value - .3
 
-  # heres how the pricing model works
-  # .15 bnb / hour
-  # one .3 discount for 6 or more hours
-  # 7
+  print("valid value", valid_value)
+  print("value paid value", value)
+
+  if value == valid_value:
+    print('user paid the correct amount')
+    print("adding user to admin from front end call")
+    add_user_admin(username, hours)
+  else:
+    print("user did not pay the correct amount")
+
+
 
 
 # SC event loop and handler
@@ -443,8 +449,8 @@ def log_loop(event_filter, poll_interval):
       for contractEvent in event_filter.get_new_entries():
         handle_event(contractEvent)
       time.sleep(poll_interval)   
-  except:
-    print("Log loop error exception")
+  except Exception as e:
+    print("Log loop error: ", e)
 
 
 # Sponge Bot
@@ -461,6 +467,7 @@ def background(f):
   def wrap(*args, **kwargs):
     try: 
       # TODO: read asyncio docs
+      # TODO: check if there's an even loop, if there isn't, then start one and continue
       loop = asyncio.new_event_loop()
       asyncio.set_event_loop(loop)
       this = asyncio.get_event_loop().run_in_executor(None, f, *args, **kwargs)
@@ -987,8 +994,6 @@ def send_hard_shill(chat_id):
   # TODO: figure out how to stop loop with a bot command
   print("Hard shill called")
   HARD_SHILL_LOOP_TIME = 60
-
-
 
   i = 0
   loop = True
