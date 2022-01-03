@@ -4,6 +4,7 @@ import time
 import requests
 import ast
 import random
+import logging
 from replit import db
 import asyncio
 from functools import wraps
@@ -392,11 +393,21 @@ contract_abi =  json.loads("""
 ]
 """)
 
-
 # TODO: add logging for errors
+
+# LOGGING CONFIG
+# logging.basicConfig(filename='debug.log', level=logging.DEBUG, 
+#                     format='%(asctime)s %(levelname)s %(name)s %(message)s')
+# logger=logging.getLogger(__name__)
 
 contract_address = '0x6B9A81410ad1eD32e2Aa6AdB5F1E9BDCA67F9578'
 contract = web3.eth.contract(address=contract_address, abi=contract_abi)
+
+def add_log(error):
+  print("add log called, error: ", error)
+  
+  log_text = f"error: {error}" 
+  logger.error(log_text)
 
 def handle_user_paid(eventDict):
   username = eventDict['args']['_username']
@@ -422,10 +433,10 @@ def handle_user_paid(eventDict):
     print('user paid the correct amount')
     print("adding user to admin from front end call")
     add_user_admin(username, hours)
+    # TODO: test me
+
   else:
     print("user did not pay the correct amount")
-
-
 
 
 # SC event loop and handler
@@ -450,6 +461,7 @@ def log_loop(event_filter, poll_interval):
         handle_event(contractEvent)
       time.sleep(poll_interval)   
   except Exception as e:
+    # add_log(e)
     print("Log loop error: ", e)
 
 
@@ -582,10 +594,6 @@ def is_admin(username):
     admin_time = user['adminTime']
     print("admin time", admin_time)
     
-    time_as_admin = 3
-    print("createdDate", user_acc['createdDate'])
-    print("time as admin", time_as_admin)
-
     res = check_time_passed(user_acc['createdDate'], admin_time)
 
     # res = check_time_passed(user_acc['createdDate'], 0.001)
@@ -645,6 +653,12 @@ def check_time_passed(dateTimeStr, hours):
     print(f"less than {hours} hours have passed")
     return False
 
+# @bot.message_handler(commands=['log_test'])
+# def log_test(message):
+#   print('log test called')
+#   username = message.from_user.username
+#   add_log(username)
+#   print("after add log")
 
 # TODO: make it so that this function displays how much time is remaining on the users
 # admin access
@@ -707,7 +721,8 @@ def add_user_admin(username, adminTimeHours):
   new_admin = {
     "username": username,
     "createdDate": createdDate,
-    "adminTime": adminTimeHours
+    "adminTime": adminTimeHours,
+    "shillGroup": "",
   }
 
   try: 
@@ -742,10 +757,13 @@ def add_user_admin_handler(message):
   # TODO: in check user admin function, check against this admin_time limit key
   # admin_time_limit should be in hours (float)
 
+  # TODO: change this to use add_user_admin function 
+
   new_admin = {
     "username" : username,
     "createdDate": createdDate,
-    "adminTime": 3,
+    "adminTime": 999999999999,
+    "shillGroup": "",
   }
 
   try:
@@ -1192,7 +1210,7 @@ async def song(client, message):
         download = audio.download(filename=f"{str(user_id)}")
     except Exception as ex:
         await status.edit("Failed to download song 😶")
-        LOGGER.error(ex)
+        # LOGGER.error(ex)
         return ""
     rename = os.rename(download, f"{str(user_id)}.mp3")
     await app.send_chat_action(message.chat.id, "upload_audio")
