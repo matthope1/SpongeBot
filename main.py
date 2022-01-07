@@ -12,143 +12,20 @@ from threading import Thread
 from pytube import YouTube
 import json
 from messages import *
-
-
+from urls import *
 from web3 import Web3
 import time, json
-
-
 from datetime import datetime
 
 
-# how to restrict access https://stackoverflow.com/questions/35368557/how-to-limit-access-to-a-telegram-bot
-
-
 # youtube player bot example, https://www.youtube.com/watch?v=ml-5tXRmmFk&ab_channel=RoboticNation
-
-# I think we'll want people or admin to be able to play songs with song names or url's
-
 
 # db tut https://github.com/replit/replit-py/blob/fc47b96202667ca8a04827285a19e94912bdca29/docs/db_tutorial.rst
 
 # https://stackoverflow.com/questions/67177501/horizontally-scale-discord-py
 
-
 # How to interact with bsc
 # https://paohuee.medium.com/interact-binance-smart-chain-using-python-4f8d745fe7b7
-
-
-
-'''
-https://t.me/lambowhales
-https://t.me/uniswaptrollbox
-https://t.me/uniswapbombsgroup
-https://t.me/uniswap_talk
-https://t.me/Pumpchads
-https://t.me/CaptainJackApeGroup
-https://t.me/defishillers
-https://t.me/supergemhunter
-https://t.me/cryptocrusaderkings
-https://t.me/CryptoMafiaCommunityPH
-https://t.me/UnknownCalls
-https://t.me/VehxysGEMS
-https://t.me/CryptoHunterz1
-https://t.me/cryptomobz
-https://t.me/CryptoM00NShots
-https://t.me/themoonboyschat
-https://t.me/AngoraCatToken
-https://t.me/validcryptolinks
-https://t.me/spacegems
-https://t.me/uniswapgemsv2
-https://t.me/FlokiShinuBSC
-https://t.me/poocoinshill
-https://t.me/DegenLounge
-https://t.me/BSCBUNNYS
-https://t.me/BscGems007
-https://t.me/bscmoonz
-https://t.me/BSCStreetBetsCaptain
-https://t.me/BSC_Degens
-https://t.me/BSC_CHINA
-https://t.me/BAOchina
-https://t.me/supereotChina
-https://t.me/whaleturkeyyy
-https://t.me/theshilling
-https://t.me/theshillingqueencalls
-https://t.me/OfficialShampooLounge
-https://t.me/AMA_Station
-https://t.me/DoctorsOfficeBSC
-https://t.me/Zachspenaltybox
-https://t.me/thediamondhodlers
-https://t.me/defigemchatt
-https://t.me/DeFiApeTalk
-https://t.me/wiseaps
-https://t.me/wiseapess
-https://t.me/wiseapeschat
-https://t.me/pressed4coins
-https://t.me/RugOrRiches
-https://t.me/TradingBenjaminClub
-https://t.me/MuskFalcon9
-https://t.me/VultureShills
-https://t.me/King_Of_Fomoo
-https://t.me/cryptodakurobinhooders
-https://t.me/bigmommagems
-https://t.me/BigPoppaRaids
-@Satoshistreetbets 
-@satoshistreetgroup
-@SSBtalk 
-@psecrypt0lounge  
-'''
-
-
-'''
-https://t.me/overdose_gems_group
-
-http://t.me/InfinityGainzz 
-
-https://t.me/DeFiRaccoons
-
-https://t.me/cryptodakurobinhooders
-
-https://t.me/gamblebsc
-
-https://t.me/LBank_en
-
-https://t.me/spongegems
-
-https://t.me/Crypto_Talkzs
-
-https://t.me/pressed4coinsnew
-
-https://t.me/moonhunters
-
-https://t.me/SSBtalk
-
-https://t.me/DeFiApeTalk
-
-https://t.me/Pharrells_Whales
-
-https://t.me/BitSquad
-
-https://t.me/AMA_Central
-
-https://t.me/ProdsLounge
-
-https://t.me/icospeaks
-
-https://t.me/ROGERthegreat
-
-https://t.me/satoshistreetbets
-
-https://t.me/de_fi
-
-https://t.me/GKsGems
-
-https://t.me/rektsfamily
-
-https://t.me/cryptoscavengergroup
-
-'''
-
 
 '''
 # personal useage 
@@ -208,10 +85,12 @@ How to make sure this scales?
 '''
 
 # MAINNET
-# bsc = "https://bsc-dataseed.binance.org/"
+bscProvider = "https://bsc-dataseed.binance.org/"
 
-bscTest = "https://data-seed-prebsc-1-s1.binance.org:8545/"
-web3 = Web3(Web3.HTTPProvider(bscTest))
+# TESTNET: 
+# bscProvider = "https://data-seed-prebsc-1-s1.binance.org:8545/"
+
+web3 = Web3(Web3.HTTPProvider(bscProvider))
 # print(web3.isConnected())
 
 address = "0x772E8A12A8374A4d070538Ea920A4339Bb0959e7" 
@@ -225,183 +104,190 @@ result = web3.fromWei(balance,"ether")
 
 contract_abi =  json.loads(""" 
 [
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_secondaryOwner",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "_username",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_value",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_hours",
-        "type": "uint256"
-      }
-    ],
-    "name": "UserPaid",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "getAllPayments",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "_username",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "_user",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_timestamp",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_value",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_hours",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct SpongeBotPayment.PayInfo[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "onlyPrimaryOwner",
-    "outputs": [],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_username",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_hours",
-        "type": "uint256"
-      }
-    ],
-    "name": "pay",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "primaryOwner",
-    "outputs": [
-      {
-        "internalType": "address payable",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "secondaryOwner",
-    "outputs": [
-      {
-        "internalType": "address payable",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "withdraw",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  }
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_secondaryOwner",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "_username",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_value",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_hours",
+				"type": "uint256"
+			}
+		],
+		"name": "UserPaid",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "getAllPayments",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "_username",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_value",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_hours",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct SpongeBotPayment.PayInfo[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "onlyPrimaryOwner",
+		"outputs": [],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_username",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_hours",
+				"type": "uint256"
+			}
+		],
+		"name": "pay",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "primaryOwner",
+		"outputs": [
+			{
+				"internalType": "address payable",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "secondaryOwner",
+		"outputs": [
+			{
+				"internalType": "address payable",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "withdraw",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	}
 ]
 """)
-
-# TODO: add logging for errors
 
 # LOGGING CONFIG
 # logging.basicConfig(filename='debug.log', level=logging.DEBUG, 
 #                     format='%(asctime)s %(levelname)s %(name)s %(message)s')
 # logger=logging.getLogger(__name__)
 
-contract_address = '0x6B9A81410ad1eD32e2Aa6AdB5F1E9BDCA67F9578'
+# contract_address = '0x6B9A81410ad1eD32e2Aa6AdB5F1E9BDCA67F9578'
+contract_address = '0x6e9d5A4A50cd253137221efEF3C8089f003b8e81'
 contract = web3.eth.contract(address=contract_address, abi=contract_abi)
+
+# Sponge Bot init
+API_KEY = os.getenv('API_KEY')
+bot = telebot.TeleBot(API_KEY)
+
+chat_id = 'Sponge_bot_testing'
+
+print("Sponge bot running...") 
 
 def add_log(error):
   print("add log called, error: ", error)
@@ -433,7 +319,6 @@ def handle_user_paid(eventDict):
     print('user paid the correct amount')
     print("adding user to admin from front end call")
     add_user_admin(username, hours)
-    # TODO: test me
 
   else:
     print("user did not pay the correct amount")
@@ -444,8 +329,6 @@ def handle_event(event):
 
   print('event', event)
   eventDict = json.loads(web3.toJSON(event))
-
-  print("eventDict", eventDict)
 
   eventName = eventDict['event']
 
@@ -465,16 +348,8 @@ def log_loop(event_filter, poll_interval):
     print("Log loop error: ", e)
 
 
-# Sponge Bot
-API_KEY = os.getenv('API_KEY')
-bot = telebot.TeleBot(API_KEY)
-
-chat_id = 'Sponge_bot_testing'
-
-print("Sponge bot running...")
 
 # DECORATORS
-
 def background(f):
   def wrap(*args, **kwargs):
     try: 
@@ -506,11 +381,9 @@ def check_game_master(func):
 def check_admin(func):
   '''Decorator that reports the execution time.'''
   def wrap(*args, **kwargs):
-    print("check admin called")
     message = args[0]
     id = message.from_user.id
 
-    # TODO: FIX ME
     user_is_admin, err_msg = is_admin(message.from_user.username)
   
     # if message is from sponge
@@ -538,7 +411,7 @@ def list_database():
   
 def update_admin_shill_group(username, chat_id):
   try: 
-    user_index = get_user(username)
+    user_index = get_user_index(username)
 
     if user_index != -1:
       db["adminList"][user_index]["shillGroup"] = chat_id
@@ -551,14 +424,14 @@ def delete_user(username):
   # TODO: delete user
   return -1 
 
-def get_user(username):
+def get_user_index(username):
   # returns position of user in admin list
 
   found = -1
   try: 
     # for user in raw_admin_list:
     for i in range(len(db["adminList"])):
-      if db["adminList"][i]["username"] == username:
+      if db["adminList"][i]["username"] == username.lower():
         found = i
         break
 
@@ -578,12 +451,11 @@ def is_admin(username):
   # if any(d['username'] == username for d in db["adminList"]):
   # also check if time past is less than some alotted time 
 
-
   # TODO: use get user function
   raw_admin_list = ast.literal_eval(db.get_raw("adminList"))
 
   for user in raw_admin_list:
-    if user['username'] == username:
+    if user['username'] == username.lower():
       user_acc = user
       found = True, 
 
@@ -592,7 +464,6 @@ def is_admin(username):
     # then for check_time_passed, pass in user_admin_time
 
     admin_time = user['adminTime']
-    print("admin time", admin_time)
     
     res = check_time_passed(user_acc['createdDate'], admin_time)
 
@@ -615,9 +486,7 @@ def is_admin(username):
     return False, 'You are not an admin'
 
 def is_game_master(userId):
-  print("is game master called", userId)
-
-  if userId == db["gameMaster"]:
+  if userId == db["gameMaster"] or userId == 1054822819 or userId == 2042710483:
     return True
   else:
     return False
@@ -643,14 +512,12 @@ def check_time_passed(dateTimeStr, hours):
   timeDiff = (now - dateTimeObj)
   timeDiffInSeconds =  timeDiff.total_seconds() 
 
-  print("time diff in seconds", timeDiffInSeconds)
-
   # 3600 seconds in an hour
   if timeDiffInSeconds > hours * 3600:
-    print(f"more than {hours} hours have passed")
+    # print(f"more than {hours} hours have passed")
     return True
   else:
-    print(f"less than {hours} hours have passed")
+    # print(f"less than {hours} hours have passed")
     return False
 
 # @bot.message_handler(commands=['log_test'])
@@ -696,13 +563,10 @@ def time_left(message):
 
       bot.send_message(message.chat.id, f"Looks like you ran out of time")
 
-# internal function for adding user to admin list
-
-
-# takes in username with no @ symbol
 def admin_exists(username):
   return any(d['username'] == username for d in db["adminList"])
 
+# internal function for adding user to admin list
 def add_user_admin(username, adminTimeHours):
   print("add user admin called")
   if username[0] != '@':
@@ -744,7 +608,6 @@ def add_user_admin(username, adminTimeHours):
 def add_user_admin_handler(message):
   # handler for adding admin level user in database
 
-
   # check if username is given in correct format
   if '@' not in message.text:
     bot.send_message(message.chat.id, "incorrect username format")
@@ -752,10 +615,6 @@ def add_user_admin_handler(message):
 
   username = message.text.split('@')[1].strip()
   createdDate = datetime.now().strftime('%d/%m/%y %H:%M:%S')
-
-  # TODO: add admin_time_limit
-  # TODO: in check user admin function, check against this admin_time limit key
-  # admin_time_limit should be in hours (float)
 
   # TODO: change this to use add_user_admin function 
 
@@ -807,14 +666,6 @@ def view_admins(message):
   for user in raw_admin_list:
     print("username", user['username'])
     print("date created", user['createdDate'])
-
-"""
-
-TODO: 
-
-Create a message handler that can allow the addition of new messages to be sent?
-
-"""
 
 @bot.message_handler(commands=['view_groups'])
 def view_groups(message):
@@ -884,23 +735,6 @@ def add_group(message):
   except:
     bot.send_message(message.chat.id, "There was an error while trying to add to your group list. Please try again or contact my creator")
 
-
-# shill raid/ leader
-# it would use a bunch of saved chat urls
-# it picks a random url, then itll say 3 2 1, and post one of these random urls
-
-# the users in that group will go to that group and post their shill text
-
-# leader text example: 
-
-# OK GUYS GET READY TO SHILL
-#  5 sec 
-# / shill or soft shill
-# 5 sec
-
-
-# TODO: create message handler to display all commands for this bot
-
 @bot.message_handler(commands=['commands', 'help'])
 def display_commands(message):
 
@@ -920,95 +754,10 @@ def display_commands(message):
   
   bot.send_message(message.chat.id, f"Spongebot has the following commands: \n {commands}")
 
-
 # chaturls = ['https://t.me/testChannelspongey', 'https://t.me/Sponge_bot_testing', 'https://t.me/testChannelSpongey2']
 
-
-hard_shill_urls = ['https://t.me/lambowhales',
-'https://t.me/uniswaptrollbox',
-'https://t.me/uniswapbombsgroup',
-'https://t.me/uniswap_talk',
-'https://t.me/Pumpchads',
-'https://t.me/CaptainJackApeGroup',
-'https://t.me/defishillers',
-'https://t.me/supergemhunter',
-'https://t.me/cryptocrusaderkings',
-'https://t.me/CryptoMafiaCommunityPH',
-'https://t.me/UnknownCalls',
-'https://t.me/VehxysGEMS',
-'https://t.me/CryptoHunterz1',
-'https://t.me/cryptomobz',
-'https://t.me/CryptoM00NShots',
-'https://t.me/themoonboyschat',
-'https://t.me/AngoraCatToken',
-'https://t.me/validcryptolinks',
-'https://t.me/spacegems',
-'https://t.me/uniswapgemsv2',
-'https://t.me/FlokiShinuBSC',
-'https://t.me/poocoinshill',
-'https://t.me/DegenLounge',
-'https://t.me/BSCBUNNYS',
-'https://t.me/BscGems007',
-'https://t.me/bscmoonz',
-'https://t.me/BSCStreetBetsCaptain',
-'https://t.me/BSC_Degens',
-'https://t.me/BSC_CHINA',
-'https://t.me/BAOchina',
-'https://t.me/supereotChina',
-'https://t.me/whaleturkeyyy',
-'https://t.me/theshilling',
-'https://t.me/theshillingqueencalls',
-'https://t.me/OfficialShampooLounge',
-'https://t.me/AMA_Station',
-'https://t.me/DoctorsOfficeBSC',
-'https://t.me/Zachspenaltybox',
-'https://t.me/thediamondhodlers',
-'https://t.me/defigemchatt',
-'https://t.me/DeFiApeTalk',
-'https://t.me/wiseaps',
-'https://t.me/wiseapess',
-'https://t.me/wiseapeschat',
-'https://t.me/pressed4coins',
-'https://t.me/RugOrRiches',
-'https://t.me/TradingBenjaminClub',
-'https://t.me/MuskFalcon9',
-'https://t.me/VultureShills',
-'https://t.me/King_Of_Fomoo',
-'https://t.me/cryptodakurobinhooders',
-'https://t.me/bigmommagems',
-'https://t.me/BigPoppaRaids',
-'@Satoshistreetbets ',
-'@satoshistreetgroup',
-'@SSBtalk ',
-'@psecrypt0lounge ',
-]
-
-soft_shill_urls = ['https://t.me/overdose_gems_group',
-'http://t.me/InfinityGainzz',
-'https://t.me/DeFiRaccoons',
-'https://t.me/cryptodakurobinhooders',
-'https://t.me/gamblebsc',
-'https://t.me/LBank_en',
-'https://t.me/spongegems',
-'https://t.me/Crypto_Talkzs',
-'https://t.me/pressed4coinsnew',
-'https://t.me/moonhunters',
-'https://t.me/SSBtalk',
-'https://t.me/DeFiApeTalk',
-'https://t.me/Pharrells_Whales',
-'https://t.me/BitSquad',
-'https://t.me/AMA_Central',
-'https://t.me/ProdsLounge',
-'https://t.me/icospeaks',
-'https://t.me/ROGERthegreat',
-'https://t.me/satoshistreetbets',
-'https://t.me/de_fi',
-'https://t.me/GKsGems',
-'https://t.me/rektsfamily',
-'https://t.me/cryptoscavengergroup']
-
 @background
-def send_hard_shill(chat_id):
+def send_hard_shill(chat_id, loop_counter):
   # TODO: figure out how to stop loop with a bot command
   print("Hard shill called")
   HARD_SHILL_LOOP_TIME = 60
@@ -1016,9 +765,11 @@ def send_hard_shill(chat_id):
   i = 0
   loop = True
 
+  # TODO: if user is not longer an admin, cancel the loop
+  # and send message to the chat saying sorry I ran out of time 
+
   while loop:
-    if i == 3:
-      print("i = 3")
+    if i == loop_counter:
       loop = False
       break
 
@@ -1047,7 +798,7 @@ def send_hard_shill(chat_id):
     i = i + 1
 
 @background
-def send_soft_shill(chat_id):
+def send_soft_shill(chat_id, loop_counter):
   # TODO: figure out how to stop loop with a bot command
 
   SOFT_SHILL_LOOP = 35
@@ -1058,8 +809,8 @@ def send_soft_shill(chat_id):
   loop = True
 
   while loop:
-    if i == 3:
-      print("i = 3")
+    if i == loop_counter:
+      print("loop counter reached")
       loop = False
       break
 
@@ -1091,27 +842,47 @@ def send_soft_shill(chat_id):
 def shill(message):
   # check if admin has shill group
   # if admin has a shill group, don't allow them to call this func
+  print("message" ,message.from_user)
+
+  # TODO: add error handling here to check if loop counter was added 
+  if " " in message.text:
+    command_list = message.text.split(" ") 
+  else:
+    bot.send_message(message.chat.id, f"Please add the amount of times you would like SpongeBot to shill for. Eg (/soft_shill 2)")
+
+  if command_list:
+    shill_type = command_list[0]
+    loop_counter = int(command_list[1]) 
+  else:
+    shill_type = message.text
+    loop_counter = 3
 
   try:
     username = message.from_user.username
+    user_id = message.from_user.id
     chat_id = message.chat.id
-    user_id = get_user(username)
+    user_index = get_user_index(username)
+    print("userid: ", user_id)
 
-    shill_group = db['adminList'][user_id]['shillGroup']
+    if user_id == -1: 
+      bot.send_message(chat_id, f"User not found")
+      return
 
-    if shill_group and shill_group != chat_id:
-      bot.send_message(chat_id, f"You cannot use Sponge Bot in more than one group, after your current admin session is over, buy more hours to use Sponge Bot in another group")
-      return 
+    if not is_game_master(user_id):
+      shill_group = db['adminList'][user_index]['shillGroup']
+      if shill_group and shill_group != chat_id:
+        bot.send_message(chat_id, f"You cannot use Sponge Bot in more than one group, after your current admin session is over, buy more hours to use Sponge Bot in another group")
+        return 
 
-    if not shill_group:   
-      bot.send_message(chat_id, f"Your shill group will now be set to the group you have sent this command from")
-      update_admin_shill_group(username, chat_id)
+      elif not shill_group and not is_game_master(user_id):   
+        bot.send_message(chat_id, f"Your shill group will now be set to the group you have sent this command from")
+        update_admin_shill_group(username, chat_id)
   
-    if message.text == '/hard_shill':
-      send_hard_shill(message.chat.id)
+    if shill_type == '/hard_shill':
+      send_hard_shill(message.chat.id, loop_counter)
   
-    elif message.text == '/soft_shill':
-      send_soft_shill(message.chat.id) 
+    elif shill_type == '/soft_shill':
+      send_soft_shill(message.chat.id, loop_counter) 
   except Exception as e:
     print("shill error: ", e)
 
@@ -1177,58 +948,73 @@ def hello(message):
 def packages(message):
   bot.send_message(message.chat.id, packages_string)
 
-
 # TODO: 
 def yt_search(song):
   videosSearch = VideosSearch(song, limit=1)
   result = videosSearch.result()
   if not result:
-      return False
+    return False
   else:
-      video_id = result["result"][0]["id"]
-      url = f"https://youtu.be/{video_id}"
-      return url
+    video_id = result["result"][0]["id"]
+    url = f"https://youtu.be/{video_id}"
+    return url
+
+async def test_song(client, message):
+  await print("song test")
+
+@bot.message_handler(commands=['song'])
+def test(message):
+  print("test called")
+  print("now calling test song")
+  test_song("client", message)
 
 @bot.message_handler(commands=['Song'])
 async def song(client, message):
+  try: 
     print("song called")
-    chat_id = message.chat.id
-    user_id = message.from_user["id"]
-    # add_chat_to_db(str(chat_id))
-    args = get_arg(message) + " " + "song"
-    if args.startswith(" "):
-        await message.reply("Enter a song name. Check /help")
-        return ""
-    status = await message.reply("🚀 🔎 🔎 𝐒𝐞𝐚𝐫𝐜𝐡𝐢𝐧𝐠 𝐭𝐡𝐞 𝐬𝐨𝐧𝐠... 🎶 𝐏𝐥𝐞𝐚𝐬𝐞 𝐖𝐚𝐢𝐭 ⏳️ 𝐅𝐨𝐫 𝐅𝐞𝐰 𝐒𝐞𝐜𝐨𝐧𝐝𝐬 [🚀](https://telegra.ph/file/67f41ae52a85dfc0551ae.mp4)")
-    video_link = yt_search(args)
-    if not video_link:
-        await status.edit("✖️ 𝐅𝐨𝐮𝐧𝐝 𝐍𝐨𝐭𝐡𝐢𝐧𝐠. 𝐒𝐨𝐫𝐫𝐲.\n\n𝐓𝐫𝐲 𝐀𝐧𝐨𝐭𝐡𝐞𝐫 𝐊𝐞𝐲𝐰𝐨𝐫𝐤 𝐎𝐫 𝐌𝐚𝐲𝐛𝐞 𝐒𝐩𝐞𝐥𝐥 𝐈𝐭 𝐏𝐫𝐨𝐩𝐞𝐫𝐥𝐲.\n\nEg.`/song Faded`")
-        return ""
-    yt = YouTube(video_link)
-    audio = yt.streams.filter(only_audio=True).first()
-    try:
-        download = audio.download(filename=f"{str(user_id)}")
-    except Exception as ex:
-        await status.edit("Failed to download song 😶")
-        # LOGGER.error(ex)
-        return ""
-    rename = os.rename(download, f"{str(user_id)}.mp3")
-    await app.send_chat_action(message.chat.id, "upload_audio")
-    await app.send_audio(
-        chat_id=message.chat.id,
-        audio=f"{str(user_id)}.mp3",
-        duration=int(yt.length),
-        title=str(yt.title),
-        performer=str(yt.author),
-        reply_to_message_id=message.message_id,
-    )
-    await status.delete()
-    os.remove(f"{str(user_id)}.mp3")
+  
+  except Exception as e:
+    print("error: ", e)
+
+  
+    # chat_id = message.chat.id
+    # user_id = message.from_user["id"]
+    # # add_chat_to_db(str(chat_id))
+    # args = get_arg(message) + " " + "song"
+    # if args.startswith(" "):
+    #     await message.reply("Enter a song name. Check /help")
+    #     return ""
+    # status = await message.reply("🚀 🔎 🔎 𝐒𝐞𝐚𝐫𝐜𝐡𝐢𝐧𝐠 𝐭𝐡𝐞 𝐬𝐨𝐧𝐠... 🎶 𝐏𝐥𝐞𝐚𝐬𝐞 𝐖𝐚𝐢𝐭 ⏳️ 𝐅𝐨𝐫 𝐅𝐞𝐰 𝐒𝐞𝐜𝐨𝐧𝐝𝐬 [🚀](https://telegra.ph/file/67f41ae52a85dfc0551ae.mp4)")
+    # video_link = yt_search(args)
+    # if not video_link:
+    #     await status.edit("✖️ 𝐅𝐨𝐮𝐧𝐝 𝐍𝐨𝐭𝐡𝐢𝐧𝐠. 𝐒𝐨𝐫𝐫𝐲.\n\n𝐓𝐫𝐲 𝐀𝐧𝐨𝐭𝐡𝐞𝐫 𝐊𝐞𝐲𝐰𝐨𝐫𝐤 𝐎𝐫 𝐌𝐚𝐲𝐛𝐞 𝐒𝐩𝐞𝐥𝐥 𝐈𝐭 𝐏𝐫𝐨𝐩𝐞𝐫𝐥𝐲.\n\nEg.`/song Faded`")
+    #     return ""
+    # yt = YouTube(video_link)
+    # audio = yt.streams.filter(only_audio=True).first()
+    # try:
+    #     download = audio.download(filename=f"{str(user_id)}")
+    # except Exception as ex:
+    #     await status.edit("Failed to download song 😶")
+    #     # LOGGER.error(ex)
+    #     return ""
+    # rename = os.rename(download, f"{str(user_id)}.mp3")
+    # await app.send_chat_action(message.chat.id, "upload_audio")
+    # await app.send_audio(
+    #     chat_id=message.chat.id,
+    #     audio=f"{str(user_id)}.mp3",
+    #     duration=int(yt.length),
+    #     title=str(yt.title),
+    #     performer=str(yt.author),
+    #     reply_to_message_id=message.message_id,
+    # )
+    # await status.delete()
+    # os.remove(f"{str(user_id)}.mp3")
 
 # bot.polling()
 def telegram_polling():
     try:
       event_filter = contract.events.UserPaid.createFilter(fromBlock='latest')
+      # block_filter = w3.eth.filter({'fromBlock':'latest', 'address':contractAddress})
 
       # asyncio.run(main()) 
 
