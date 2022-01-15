@@ -17,6 +17,8 @@ from web3 import Web3
 import time, json
 from datetime import datetime
 
+# Telebot docs
+# https://github.com/eternnoir/pyTelegramBotAPI#telebot
 
 # youtube player bot example, https://www.youtube.com/watch?v=ml-5tXRmmFk&ab_channel=RoboticNation
 
@@ -422,22 +424,35 @@ def update_admin_shill_group(username, chat_id):
 
 def delete_user(username):
   # TODO: delete user
-  return -1 
+  user_index = get_user_index(username)
+
+  print("userIndex", user_index)
+  if user_index != -1:
+    # TODO: delete user from admin list
+    print("admin list before change")
+    print(db["adminList"])
+    db["adminList"].remove(db["adminList"][user_index])
+    print("admin list after change")
+    print(db["adminList"])
+    
+  return user_index 
 
 def get_user_index(username):
   # returns position of user in admin list
-
   found = -1
   try: 
     # for user in raw_admin_list:
     for i in range(len(db["adminList"])):
-      if db["adminList"][i]["username"] == username.lower():
+      if db["adminList"][i]["username"].lower() == username.lower():
+        print(db["adminList"][i]["username"].lower())
+        print("=")
+        print(username.lower())
         found = i
         break
 
     return found
   except Exception as e:
-    print("update admin shill group error", e)
+    print("Get user index error", e)
 
 
 def is_admin(username):
@@ -601,6 +616,29 @@ def add_user_admin(username, adminTimeHours):
       print("user is already an admin")
   except:
     print("add admin failure")
+
+
+@bot.message_handler(commands=['remove_admin'])
+@check_game_master
+def delete_user_admin_handler(message):
+  # handler for removing admin from db
+
+  if '@' not in message.text:
+    bot.send_message(message.chat.id, "incorrect username format")
+    return
+  
+  username = message.text.split('@')[1].strip()
+
+  try:
+    delete_result = delete_user(username)
+    if delete_result != -1:
+      bot.send_message(message.chat.id, f"Successfully removed {username} from admin list")
+    else: 
+      bot.send_message(message.chat.id, f"Failed to remove {username} from admin list.. user not found")
+  except Exception as e:
+    print("delete user error", e)
+    bot.send_message(message.chat.id, f"Failed to remove {username} from admin list.. error: {e}")
+
 
 
 @bot.message_handler(commands=['add_admin'])
@@ -785,12 +823,12 @@ def send_hard_shill(chat_id, loop_counter):
   
     bot.send_message(chat_id, "OK GUYS GET READY TO SHILL")
     time.sleep(5)
-    bot.send_message(chat_id, f"POSTING THE RAID LINK IN 3...")
-    time.sleep(1)
-    bot.send_message(chat_id, f"2...")
-    time.sleep(1)
-    bot.send_message(chat_id, f"1...")
-    time.sleep(1)
+    bot.send_message(chat_id, f"POSTING THE RAID LINK IN 3 2 1...")
+    time.sleep(3)
+    # bot.send_message(chat_id, f"2...")
+    # time.sleep(1)
+    # bot.send_message(chat_id, f"1...")
+    # time.sleep(1)
   
     bot.send_message(chat_id, f"GO! {randomUrl}")
 
@@ -800,6 +838,15 @@ def send_hard_shill(chat_id, loop_counter):
 @background
 def send_soft_shill(chat_id, loop_counter):
   # TODO: figure out how to stop loop with a bot command
+
+  # try: 
+  #   # gif = open('./assets/321.gif', 'rb')
+  #   gif = open('./assets/321-one-loop.gif', 'rb')
+  #   bot.send_video(chat_id, gif)
+  # except Exception as e: 
+  #   print("send gif failed", e)
+
+  # return 
 
   SOFT_SHILL_LOOP = 35
 
@@ -824,12 +871,12 @@ def send_soft_shill(chat_id, loop_counter):
 
     bot.send_message(chat_id, "OK GUYS GET READY TO SHILL")
     time.sleep(5)
-    bot.send_message(chat_id, f"POSTING THE RAID LINK IN 3...")
-    time.sleep(1)
-    bot.send_message(chat_id, f"2...")
-    time.sleep(1)
-    bot.send_message(chat_id, f"1...")
-    time.sleep(1)
+    bot.send_message(chat_id, f"POSTING THE RAID LINK IN 3 2 1...")
+    time.sleep(3)
+    # bot.send_message(chat_id, f"2...")
+    # time.sleep(1)
+    # bot.send_message(chat_id, f"1...")
+    # time.sleep(1)
 
     bot.send_message(chat_id, f"GO! {randomUrl}")
 

@@ -69,7 +69,6 @@ soft_shill_urls = ['https://t.me/overdose_gems_group',
 'https://t.me/moonhunters',
 'https://t.me/SSBtalk',
 'https://t.me/DeFiApeTalk',
-'https://t.me/Pharrells_Whales',
 'https://t.me/BitSquad',
 'https://t.me/AMA_Central',
 'https://t.me/ProdsLounge',
@@ -79,4 +78,9 @@ soft_shill_urls = ['https://t.me/overdose_gems_group',
 'https://t.me/de_fi',
 'https://t.me/GKsGems',
 'https://t.me/rektsfamily',
-'https://t.me/cryptoscavengergroup']
+'https://t.me/cryptoscavengergroup'
+'https://t.me/Satoshi_club'
+'https://t.me/GrimsGems',
+'https://t.me/SatoshiStreetBetsOriginal',
+'https://t.me/TomCalls',
+]
