@@ -421,20 +421,10 @@ def update_admin_shill_group(username, chat_id):
   except Exception as e:
     print("update admin shill group error", e)
 
-
 def delete_user(username):
-  # TODO: delete user
   user_index = get_user_index(username)
-
-  print("userIndex", user_index)
   if user_index != -1:
-    # TODO: delete user from admin list
-    print("admin list before change")
-    print(db["adminList"])
     db["adminList"].remove(db["adminList"][user_index])
-    print("admin list after change")
-    print(db["adminList"])
-    
   return user_index 
 
 def get_user_index(username):
@@ -444,9 +434,6 @@ def get_user_index(username):
     # for user in raw_admin_list:
     for i in range(len(db["adminList"])):
       if db["adminList"][i]["username"].lower() == username.lower():
-        print(db["adminList"][i]["username"].lower())
-        print("=")
-        print(username.lower())
         found = i
         break
 
