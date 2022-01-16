@@ -835,9 +835,11 @@ def send_soft_shill(chat_id, loop_counter):
 
   # return 
 
-  SOFT_SHILL_LOOP = 35
+  SOFT_SHILL_LOOP = 120 
 
   bot.send_message(chat_id, "Soft shilling is: talking about the project in a casual manner that may not come off as shilling to people who aren’t aware of what shilling is")
+
+  time.sleep(10)
 
   i = 0
   loop = True
