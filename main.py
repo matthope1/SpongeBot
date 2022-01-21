@@ -782,50 +782,7 @@ def display_commands(message):
 # chaturls = ['https://t.me/testChannelspongey', 'https://t.me/Sponge_bot_testing', 'https://t.me/testChannelSpongey2']
 
 @background
-def send_hard_shill(chat_id, loop_counter):
-  # TODO: figure out how to stop loop with a bot command
-  print("Hard shill called")
-  HARD_SHILL_LOOP_TIME = 60
-
-  i = 0
-  loop = True
-
-  # TODO: if user is not longer an admin, cancel the loop
-  # and send message to the chat saying sorry I ran out of time 
-
-  while loop:
-    if i == loop_counter:
-      loop = False
-      break
-
-    # get random number
-    n = random.randint(0,len(hard_shill_urls) - 1)
-  
-    # use number to get random entry from the chat urls list
-    randomUrl = hard_shill_urls[n]
-  
-    bot.send_message(chat_id, "EVERYONE COPY THE HARDSHILL TEXT FROM ROSE!")
-    bot.send_message(chat_id, "/shill /hardshill /template")
-    time.sleep(2)
-  
-    bot.send_message(chat_id, "OK GUYS GET READY TO SHILL")
-    time.sleep(5)
-    bot.send_message(chat_id, f"POSTING THE RAID LINK IN 3 2 1...")
-    time.sleep(3)
-    # bot.send_message(chat_id, f"2...")
-    # time.sleep(1)
-    # bot.send_message(chat_id, f"1...")
-    # time.sleep(1)
-  
-    bot.send_message(chat_id, f"GO! {randomUrl}")
-
-    time.sleep(HARD_SHILL_LOOP_TIME)
-    i = i + 1
-
-@background
 def send_soft_shill(chat_id, loop_counter):
-  # TODO: figure out how to stop loop with a bot command
-
   # try: 
   #   # gif = open('./assets/321.gif', 'rb')
   #   gif = open('./assets/321-one-loop.gif', 'rb')
@@ -862,10 +819,6 @@ def send_soft_shill(chat_id, loop_counter):
     time.sleep(5)
     bot.send_message(chat_id, f"POSTING THE RAID LINK IN 3 2 1...")
     time.sleep(3)
-    # bot.send_message(chat_id, f"2...")
-    # time.sleep(1)
-    # bot.send_message(chat_id, f"1...")
-    # time.sleep(1)
 
     bot.send_message(chat_id, f"GO! {randomUrl}")
 
@@ -877,10 +830,8 @@ def send_soft_shill(chat_id, loop_counter):
 @check_admin
 def shill(message):
   # check if admin has shill group
-  # if admin has a shill group, don't allow them to call this func
-  print("message" ,message.from_user)
+  # if admin has a shill group, don't allow them to call this function
 
-  # TODO: add error handling here to check if loop counter was added 
   if " " in message.text:
     command_list = message.text.split(" ") 
   else:
@@ -914,10 +865,7 @@ def shill(message):
         bot.send_message(chat_id, f"Your shill group will now be set to the group you have sent this command from")
         update_admin_shill_group(username, chat_id)
   
-    if shill_type == '/hard_shill':
-      send_hard_shill(message.chat.id, loop_counter)
-  
-    elif shill_type == '/soft_shill':
+    if shill_type == '/soft_shill':
       send_soft_shill(message.chat.id, loop_counter) 
   except Exception as e:
     print("shill error: ", e)
