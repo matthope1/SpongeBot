@@ -77,8 +77,8 @@ soft_shill_urls = ['https://t.me/overdose_gems_group',
 'https://t.me/de_fi',
 'https://t.me/GKsGems',
 'https://t.me/rektsfamily',
-'https://t.me/cryptoscavengergroup'
-'https://t.me/Satoshi_club'
+'https://t.me/cryptoscavengergroup',
+'https://t.me/Satoshi_club',
 'https://t.me/GrimsGems',
 'https://t.me/SatoshiStreetBetsOriginal',
 'https://t.me/TomCalls',
