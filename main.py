@@ -387,25 +387,33 @@ def check_game_master(func):
 def check_admin(func):
   '''Decorator that reports the execution time.'''
   def wrap(*args, **kwargs):
-    message = args[0]
-    id = message.from_user.id
+    print("check admin called")
 
-    user_is_admin, err_msg = is_admin(message.from_user.username)
+    try: 
+      message = args[0]
+      id = message.from_user.id
   
-    # if message is from sponge
-    if id == 1054822819:
-      print("command is from sponge")
-      user_is_admin = True 
+      user_is_admin, err_msg = is_admin(message.from_user.username)
   
-    if user_is_admin:
-      result = func(*args, **kwargs)
-      return result
-    else:
-      if err_msg:
-        bot.send_message(message.chat.id, f"{err_msg}")
-      else:   
-        bot.send_message(message.chat.id, f"You are not an admin, please contact sponge to gain admin access")
-        
+    
+      # if message is from sponge
+      if id == 1054822819:
+        print("command is from sponge")
+        user_is_admin = True 
+    
+      if user_is_admin:
+        result = func(*args, **kwargs)
+        return result
+      else:
+        if err_msg:
+          bot.send_message(message.chat.id, f"{err_msg}")
+        else:   
+          bot.send_message(message.chat.id, f"You are not an admin, please contact sponge to gain admin access")
+          
+    except Exception as e:
+      print("check admin failure", e)
+      bot.send_message(message.chat.id, f"Check admin error: {e}")
+
   return wrap
   
 def list_database():
@@ -519,7 +527,7 @@ def check_time_passed(dateTimeStr, hours):
   timeDiffInSeconds =  timeDiff.total_seconds() 
 
   # 3600 seconds in an hour
-  if timeDiffInSeconds > hours * 3600:
+  if timeDiffInSeconds > int(hours) * 3600:
     # print(f"more than {hours} hours have passed")
     return True
   else:
@@ -828,6 +836,8 @@ def send_soft_shill(chat_id, loop_counter):
 def shill(message):
   # check if admin has shill group
   # if admin has a shill group, don't allow them to call this function
+
+  print("shill called")
 
   if " " in message.text:
     command_list = message.text.split(" ") 
