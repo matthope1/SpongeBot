@@ -408,7 +408,7 @@ def check_admin(func):
         if err_msg:
           bot.send_message(message.chat.id, f"{err_msg}")
         else:   
-          bot.send_message(message.chat.id, f"You are not an admin, please contact sponge to gain admin access")
+          bot.send_message(message.chat.id, f"You are not an admin, please contact sponge or navigate to https://spongebot.io to purchase admin access.")
           
     except Exception as e:
       print("check admin failure", e)
@@ -669,6 +669,10 @@ def add_user_admin_handler(message):
   bot.send_message(message.chat.id, result_message)
 
 
+@bot.message_handler(commands=['payment'])
+def payment(message):
+  bot.send_message(message.chat.id, "Please navigate to https://spongebot.io to purchase access to spongebot")
+
 @bot.message_handler(commands=['dbInit'])
 @check_game_master
 def db_init_handler(message):
@@ -772,13 +776,14 @@ def display_commands(message):
 
   commands = (
     f'/shill, /soft_shill \n'
-    f'/view_admins \n'
-    f'/message_all_groups \n'
-    f'/message_chat \n'
+    # f'/view_admins \n'
+    # f'/message_all_groups \n'
+    # f'/message_chat \n'
     f'/time_left \n'
-    f'/view_groups \n'
-    f'/add_group \n'
-    f'/remove_group \n'
+    # f'/view_groups \n'
+    # f'/add_group \n'
+    # f'/remove_group \n'
+    f'/payment \n'
     # f'/ \n'
   )
   
