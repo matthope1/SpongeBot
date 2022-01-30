@@ -155,6 +155,10 @@ contract_abi =  json.loads("""
 		"type": "event"
 	},
 	{
+		"stateMutability": "payable",
+		"type": "fallback"
+	},
+	{
 		"inputs": [],
 		"name": "getAllPayments",
 		"outputs": [
@@ -280,7 +284,7 @@ contract_abi =  json.loads("""
 # logger=logging.getLogger(__name__)
 
 # contract_address = '0x6B9A81410ad1eD32e2Aa6AdB5F1E9BDCA67F9578'
-contract_address = '0x6e9d5A4A50cd253137221efEF3C8089f003b8e81'
+contract_address = '0x80f2F522285Edbf3843241A376650B02c67aE520'
 contract = web3.eth.contract(address=contract_address, abi=contract_abi)
 
 # Sponge Bot init
@@ -570,16 +574,19 @@ def admin_exists(username):
 
 # internal function for adding user to admin list
 def add_user_admin(username, adminTimeHours):
-  print("add user admin called")
+  returnMsg = ""
+
   if username[0] != '@':
-    print("incorrect username format!")
-    return
+    returnMsg = "incorrect username format"
+    print(returnMsg)
+    return returnMsg
 
   if '@' not in username:
     # warning: this will fail if the function is called with a username like this: 
     # test@me
-    print("incorrect username format")
-    return 
+    returnMsg = "incorrect username format"
+    print(returnMsg)
+    return returnMsg
 
   username = username.split('@')[1].strip()
   createdDate = datetime.now().strftime('%d/%m/%y %H:%M:%S')
@@ -597,13 +604,17 @@ def add_user_admin(username, adminTimeHours):
       db["adminList"].append(new_admin.copy())
 
       if admin_exists(username): 
-        print("user sucessfully added to the admin list")
+        returnMsg = f"{username} was sucessfully added to your admin list"
+        print(returnMsg)
 
     else:
-      print("user is already an admin")
+      returnMsg = f"This user is already an admin"
+      print(returnMsg)
   except:
-    print("add admin failure")
-
+    returnMsg = f"There was an error while trying to add {username} to admin list"
+    print(returnMsg)
+  
+  return returnMsg
 
 @bot.message_handler(commands=['remove_admin'])
 @check_game_master
@@ -633,36 +644,22 @@ def delete_user_admin_handler(message):
 def add_user_admin_handler(message):
   # handler for adding admin level user in database
 
-  # check if username is given in correct format
-  if '@' not in message.text:
-    bot.send_message(message.chat.id, "incorrect username format")
-    return
+  messageSplit = message.text.split()
+  raw_username = messageSplit[1]
 
-  username = message.text.split('@')[1].strip()
-  createdDate = datetime.now().strftime('%d/%m/%y %H:%M:%S')
+  if (len(messageSplit) == 3):
+    admin_time_hours = messageSplit[2]
+  else:
+    bot.send_message(message.chat.id, f"Please add amount of hours. For example: '/add_admin @exampleUsername 5' ")
+    return 
 
-  # TODO: change this to use add_user_admin function 
+  try: 
+    result_message = add_user_admin(raw_username, admin_time_hours)
+  except Exception as e:
+    print("e", e)
 
-  new_admin = {
-    "username" : username,
-    "createdDate": createdDate,
-    "adminTime": 999999999999,
-    "shillGroup": "",
-  }
+  bot.send_message(message.chat.id, result_message)
 
-  try:
-    # if not any(d['username'] == username for d in db["adminList"]):
-    if not admin_exists(username):
-      # append copy of dict to create new ref
-      db["adminList"].append(new_admin.copy())
-  
-      if admin_exists(username):
-        bot.send_message(message.chat.id, f"{username} was sucessfully added to your admin list")
-    else:
-      bot.send_message(message.chat.id, f"This user is already an admin")
-  
-  except:
-    bot.send_message(message.chat.id, f"There was an error while trying to add {username} to admin list")
 
 @bot.message_handler(commands=['dbInit'])
 @check_game_master
