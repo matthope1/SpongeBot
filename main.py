@@ -13,6 +13,7 @@ from pytube import YouTube
 import json
 from messages import *
 from urls import *
+from utility import *
 from web3 import Web3
 import time, json
 from datetime import datetime
@@ -394,7 +395,6 @@ def check_admin(func):
       id = message.from_user.id
   
       user_is_admin, err_msg = is_admin(message.from_user.username)
-  
     
       # if message is from sponge
       if id == 1054822819:
@@ -552,30 +552,40 @@ def time_left(message):
   print('time left called')
   username = message.from_user.username
 
-  raw_admin_list = ast.literal_eval(db.get_raw("adminList"))
+  if admin_exists(username):
+    print("admin found")
 
-  for user in raw_admin_list:
-    print(f"{user['username']} == {username}")
-    print(user['username'] == username)
-    if user['username'] == username:
-      print("user found")
-      date_time_str = user['createdDate']
-      print(f"date time str = {date_time_str}")
-      # TODO: fix me
-      date_time_obj = datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')
-      print("before")
-      print(date_time_obj)
-      print("after")
-      print(f"time left for {username}: {date_time_obj} ")
-      now = datetime.now()
-      print(f"current time {now}")
-      print(f"time diff = {now - date_time_obj}")
-      bot.send_message(message.chat.id, f"Time left as admin: {date_time_obj}")
-    else: 
+    # date_time_str = user['createdDate']
+    # print(f"date time str = {date_time_str}")
 
-      print("user not found")
+    user = get_user_object(username)
+    print("user:", user)
 
-      bot.send_message(message.chat.id, f"Looks like you ran out of time")
+
+  # raw_admin_list = ast.literal_eval(db.get_raw("adminList"))
+
+  # for user in raw_admin_list:
+  #   print(f"{user['username']} == {username}")
+  #   print(user['username'] == username)
+  #   if user['username'] == username:
+  #     print("user found")
+  #     date_time_str = user['createdDate']
+  #     print(f"date time str = {date_time_str}")
+  #     # TODO: fix me
+  #     date_time_obj = datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')
+  #     print("before")
+  #     print(date_time_obj)
+  #     print("after")
+  #     print(f"time left for {username}: {date_time_obj} ")
+  #     now = datetime.now()
+  #     print(f"current time {now}")
+  #     print(f"time diff = {now - date_time_obj}")
+  #     bot.send_message(message.chat.id, f"Time left as admin: {date_time_obj}")
+  #   else: 
+
+  #     print("user not found")
+
+  #     bot.send_message(message.chat.id, f"Looks like you ran out of time")
 
 def admin_exists(username):
   return any(d['username'] == username for d in db["adminList"])
@@ -681,6 +691,8 @@ def db_init_handler(message):
 @bot.message_handler(commands=['Greet'])
 @check_game_master
 def greet(message):
+
+  # print("message: ", message)
   
   user = message.from_user 
   print("user", user.id)
