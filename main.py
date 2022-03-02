@@ -1,6 +1,5 @@
 import os
-import telebot
-import time
+import time, threading, schedule
 import requests
 import ast
 import random
@@ -17,6 +16,19 @@ from utility import *
 from web3 import Web3
 import time, json
 from datetime import datetime
+
+import telebot
+
+import asyncio
+import aioschedule
+
+from youtubesearchpython import VideosSearch
+
+print("telebot", telebot)
+
+# from telebot.async_telebot import AsyncTeleBot
+
+
 
 # Telebot docs
 # https://github.com/eternnoir/pyTelegramBotAPI#telebot
@@ -290,7 +302,72 @@ contract = web3.eth.contract(address=contract_address, abi=contract_abi)
 
 # Sponge Bot init
 API_KEY = os.getenv('API_KEY')
+
 bot = telebot.TeleBot(API_KEY)
+
+# bot = telebot.AsyncTeleBot(API_KEY)
+
+# print("bot", bot)
+
+# from telebot.async_telebot import AsyncTeleBot
+
+# bot = AsyncTeleBot(API_KEY)
+
+print("bot", bot)
+
+# # start testing 
+
+
+# async def beep(chat_id) -> None:
+#     """Send the beep message."""
+#     await bot.send_message(chat_id, text='Beep!')
+#     # aioschedule.clear(chat_id)  # return schedule.CancelJob not working in aioschedule use tag for delete
+
+
+# @bot.message_handler(commands=['help', 'start'])
+# async def send_welcome(message):
+#   await bot.reply_to(message, "Hi! Use /set <seconds> to set a timer")
+  
+# async def send_welcome(message):
+  # await bot.reply_to(message, "Hi! Use /set <seconds> to set a timer")
+
+
+# @bot.message_handler(commands=['set'])
+# async def set_timer(message):
+#     print("set called from : ", message.chat.id)
+#     args = message.text.split()
+#     if len(args) > 1 and args[1].isdigit():
+#       sec = int(args[1])
+#       aioschedule.every(sec).seconds.do(beep, message.chat.id).tag(message.chat.id)
+#     else:
+#       await bot.reply_to(message, 'Usage: /set <seconds>')
+
+
+
+# @bot.message_handler(commands=['get_jobs'])
+# async def get_jobs(message):
+#   print("attrs: ", dir(aioschedule))
+
+#   print("jobs", aioschedule.jobs)
+
+#   return
+  
+#   jobs = aioschedule.get_jobs('2042710483')
+#   print("jobs: ", jobs)
+  
+  
+  
+
+
+
+# async def scheduler():
+#     while True:
+#         await aioschedule.run_pending()
+#         await asyncio.sleep(1)
+
+
+# end testing
+
 
 chat_id = 'Sponge_bot_testing'
 
@@ -370,12 +447,35 @@ def background(f):
     return this
   return wrap
 
+
+
+def mydecorator(f):  # f is the function passed to us from python
+  async def log_f_as_called(*args, **kwargs):
+    print(f'{f} was called.')
+    await f(*args, **kwargs)
+  return log_f_as_called
+  
+def myotherdecorator(f):  # f is the function passed to us from python
+  def log_f_as_called(*args, **kwargs):
+    print(f'{f} was called OH YO MOMMA.')
+    f(*args, **kwargs)
+  return log_f_as_called
+
+def test_decorator(func):
+
+  def wrap(*args, **kwargs):
+    print("test decorator called")
+    return
+
+  return wrap
+  
 def check_game_master(func):
   '''Decorator that reports the execution time.'''
 
   def wrap(*args, **kwargs):
+    print("calling is game master")
     message = args[0]
-    
+
     res = is_game_master(message.from_user.id)
     if res :
       result = func(*args, **kwargs)
@@ -422,7 +522,8 @@ def list_database():
   for key in keys:
     current_val = db[key]
     print(f"key {key} | value {current_val}")
-  
+
+#user utils
 def update_admin_shill_group(username, chat_id):
   try: 
     user_index = get_user_index(username)
@@ -500,6 +601,8 @@ def is_admin(username):
     return False, 'You are not an admin'
 
 def is_game_master(userId):
+  print("is game master", userId)
+  
   if userId == db["gameMaster"] or userId == 1054822819 or userId == 2042710483:
     return True
   else:
@@ -555,11 +658,17 @@ def time_left(message):
   if admin_exists(username):
     print("admin found")
 
-    # date_time_str = user['createdDate']
-    # print(f"date time str = {date_time_str}")
-
     user = get_user_object(username)
-    print("user:", user)
+    date_time_str = user['createdDate']
+    admin_time = user['adminTime']
+
+    print(f"date time str = {date_time_str}")
+    print("user", user)
+
+    # if the diff between the current date and the created date for the user is bigger than admin time
+    # user is no longer an admin
+
+    # how to get the amount of time left for the user
 
 
   # raw_admin_list = ast.literal_eval(db.get_raw("adminList"))
@@ -680,25 +789,101 @@ def add_user_admin_handler(message):
 
 
 @bot.message_handler(commands=['payment'])
-def payment(message):
-  bot.send_message(message.chat.id, "Please navigate to https://spongebot.io to purchase access to spongebot")
+async def payment(message):
+  await bot.send_message(message.chat.id, "Please navigate to https://spongebot.io to purchase access to spongebot")
 
 @bot.message_handler(commands=['dbInit'])
 @check_game_master
 def db_init_handler(message):
   db_init()
 
-@bot.message_handler(commands=['Greet'])
 @check_game_master
-def greet(message):
-
-  # print("message: ", message)
-  
+async def greetFunc(message):
   user = message.from_user 
   print("user", user.id)
   list_database()
 
-  bot.reply_to(message, "Hey! Hows it going?")
+  await bot.reply_to(message, "Hey! Hows it going?")
+
+@bot.message_handler(commands=['Greet'])
+# @check_game_master
+async def greet(message):
+  # print("message: ", message)
+  await greetFunc(message)
+  return
+  user = message.from_user 
+  print("user", user.id)
+  list_database()
+
+  await bot.reply_to(message, "Hey! Hows it going?")
+
+
+@mydecorator
+@check_game_master
+async def testFunc(message):
+  print("myfunc")
+  await bot.reply_to(message, "Hey this is greet2! Hows it going?")
+  
+
+# testing
+@bot.message_handler(commands=['Greet2'])
+# @myotherdecorator
+# @check_game_master
+async def greet2(message):
+  print("greet 2 called")
+  # print("message: ", message)
+  user = message.from_user 
+  print("user", user.id)
+  await testFunc(message)
+  return
+  # list_database()
+
+  await bot.reply_to(message, "Hey this is greet2! Hows it going?")
+
+
+
+# @bot.message_handler(commands=['unset'])
+# def unset_timer(message):
+#   # aioschedule.clean(message.chat.id)
+#   aioschedule.clear(message.chat.id)
+
+
+# end testing
+
+# start sync testing
+@bot.message_handler(commands=['help', 'start'])
+def send_welcome(message):
+    bot.reply_to(message, "Hi! Use /set <seconds> to set a timer")
+
+
+def beep(chat_id) -> None:
+  """Send the beep message."""
+  print("sending beep message")
+  bot.send_message(chat_id, text='Beep!')
+
+
+@bot.message_handler(commands=['set'])
+def set_timer(message):
+  print("set called for chat: ", message.chat.id)
+  args = message.text.split()
+  if len(args) > 1 and args[1].isdigit():
+    sec = int(args[1])
+
+    print("scheduele1")
+    schedule.every(sec).seconds.do(beep, message.chat.id).tag(message.chat.id)
+    print("scheduele2")
+  else:
+    bot.reply_to(message, 'Usage: /set <seconds>')
+
+
+@bot.message_handler(commands=['unset'])
+def unset_timer(message):
+    print("unset for chat: ", message.chat.id)
+    schedule.clear(message.chat.id)
+
+
+
+# end sync tesing
 
 @bot.message_handler(commands=['view_admins'])
 @check_game_master
@@ -803,7 +988,7 @@ def display_commands(message):
 
 # chaturls = ['https://t.me/testChannelspongey', 'https://t.me/Sponge_bot_testing', 'https://t.me/testChannelSpongey2']
 
-@background
+# @background
 def send_soft_shill(chat_id, loop_counter):
   # try: 
   #   # gif = open('./assets/321.gif', 'rb')
@@ -958,17 +1143,24 @@ def packages(message):
 
 # TODO: 
 def yt_search(song):
-  videosSearch = VideosSearch(song, limit=1)
-  result = videosSearch.result()
-  if not result:
-    return False
-  else:
-    video_id = result["result"][0]["id"]
-    url = f"https://youtu.be/{video_id}"
-    return url
+  try: 
+    
+    videosSearch = VideosSearch(song, limit=1)
+    result = videosSearch.result()
+    print("videosSearch Result: ", result)
+    if not result:
+      return False
+    else:
+      video_id = result["result"][0]["id"]
+      url = f"https://youtu.be/{video_id}"
+      return url
+      
+  except Exception as e:
+    print("yt song error: ", e)
+    
 
-async def test_song(client, message):
-  await print("song test")
+def test_song(client, message):
+  print("song test")
 
 @bot.message_handler(commands=['song'])
 def test(message):
@@ -976,61 +1168,102 @@ def test(message):
   print("now calling test song")
   test_song("client", message)
 
+def get_args(message_text):
+  if " " in message_text: 
+    return message_text.split(" ")
+
 @bot.message_handler(commands=['Song'])
-async def song(client, message):
+async def song(message):
   try: 
     print("song called")
-  
-  except Exception as e:
-    print("error: ", e)
+ 
+    chat_id = message.chat.id
+    user_id = message.from_user.id
+    song_name = ""
 
-  
-    # chat_id = message.chat.id
-    # user_id = message.from_user["id"]
-    # # add_chat_to_db(str(chat_id))
-    # args = get_arg(message) + " " + "song"
-    # if args.startswith(" "):
-    #     await message.reply("Enter a song name. Check /help")
-    #     return ""
-    # status = await message.reply("🚀 🔎 🔎 𝐒𝐞𝐚𝐫𝐜𝐡𝐢𝐧𝐠 𝐭𝐡𝐞 𝐬𝐨𝐧𝐠... 🎶 𝐏𝐥𝐞𝐚𝐬𝐞 𝐖𝐚𝐢𝐭 ⏳️ 𝐅𝐨𝐫 𝐅𝐞𝐰 𝐒𝐞𝐜𝐨𝐧𝐝𝐬 [🚀](https://telegra.ph/file/67f41ae52a85dfc0551ae.mp4)")
-    # video_link = yt_search(args)
-    # if not video_link:
-    #     await status.edit("✖️ 𝐅𝐨𝐮𝐧𝐝 𝐍𝐨𝐭𝐡𝐢𝐧𝐠. 𝐒𝐨𝐫𝐫𝐲.\n\n𝐓𝐫𝐲 𝐀𝐧𝐨𝐭𝐡𝐞𝐫 𝐊𝐞𝐲𝐰𝐨𝐫𝐤 𝐎𝐫 𝐌𝐚𝐲𝐛𝐞 𝐒𝐩𝐞𝐥𝐥 𝐈𝐭 𝐏𝐫𝐨𝐩𝐞𝐫𝐥𝐲.\n\nEg.`/song Faded`")
-    #     return ""
-    # yt = YouTube(video_link)
-    # audio = yt.streams.filter(only_audio=True).first()
-    # try:
-    #     download = audio.download(filename=f"{str(user_id)}")
-    # except Exception as ex:
-    #     await status.edit("Failed to download song 😶")
-    #     # LOGGER.error(ex)
-    #     return ""
-    # rename = os.rename(download, f"{str(user_id)}.mp3")
-    # await app.send_chat_action(message.chat.id, "upload_audio")
-    # await app.send_audio(
-    #     chat_id=message.chat.id,
-    #     audio=f"{str(user_id)}.mp3",
-    #     duration=int(yt.length),
-    #     title=str(yt.title),
-    #     performer=str(yt.author),
-    #     reply_to_message_id=message.message_id,
-    # )
-    # await status.delete()
-    # os.remove(f"{str(user_id)}.mp3")
+    message_args = get_args(message.text)
+    print("message args", message_args)
+    if message_args:
+      song_name = message_args[1]
+    
+    # await bot.reply_to(message, "Searching the song reply to")
+    # await bot.send_message(chat_id, text='Searching the song send message')
+    
+    status = await bot.reply_to(message,"🚀 🔎 🔎 𝐒𝐞𝐚𝐫𝐜𝐡𝐢𝐧𝐠 𝐭𝐡𝐞 𝐬𝐨𝐧𝐠... 🎶 𝐏𝐥𝐞𝐚𝐬𝐞 𝐖𝐚𝐢𝐭 ⏳️ 𝐅𝐨𝐫 𝐅𝐞𝐰 𝐒𝐞𝐜𝐨𝐧𝐝𝐬 [🚀](https://telegra.ph/file/67f41ae52a85dfc0551ae.mp4)")
+    video_link = yt_search(song_name)
+    
+    if not video_link:
+        await status.edit("✖️ 𝐅𝐨𝐮𝐧𝐝 𝐍𝐨𝐭𝐡𝐢𝐧𝐠. 𝐒𝐨𝐫𝐫𝐲.\n\n𝐓𝐫𝐲 𝐀𝐧𝐨𝐭𝐡𝐞𝐫 𝐊𝐞𝐲𝐰𝐨𝐫𝐤 𝐎𝐫 𝐌𝐚𝐲𝐛𝐞 𝐒𝐩𝐞𝐥𝐥 𝐈𝐭 𝐏𝐫𝐨𝐩𝐞𝐫𝐥𝐲.\n\nEg.`/song Faded`")
+        return ""
+    yt = YouTube(video_link)
+    audio = yt.streams.filter(only_audio=True).first()
+    try:
+        download = audio.download(filename=f"{str(user_id)}")
+    except Exception as ex:
+        await status.edit("Failed to download song 😶")
+        # LOGGER.error(ex)
+        return ""
+    rename = os.rename(download, f"{str(user_id)}.mp3")
+    await app.send_chat_action(message.chat.id, "upload_audio")
+    await app.send_audio(
+        chat_id=message.chat.id,
+        audio=f"{str(user_id)}.mp3",
+        duration=int(yt.length),
+        title=str(yt.title),
+        performer=str(yt.author),
+        reply_to_message_id=message.message_id,
+    )
+    await status.delete()
+    os.remove(f"{str(user_id)}.mp3")
+ 
+  except Exception as e:
+    
+    print("Song error: ", e)
 
 # bot.polling()
+# async def telegram_polling():
+
+def thread_test():
+  print('thread test')
+
+def schedule_pending_loop():
+   while True:
+      print("scheduele polling...")
+      schedule.run_pending()
+      time.sleep(1)
+
 def telegram_polling():
     try:
       event_filter = contract.events.UserPaid.createFilter(fromBlock='latest')
-      # block_filter = w3.eth.filter({'fromBlock':'latest', 'address':contractAddress})
+    
+      bsc_event_worker = Thread(target=log_loop, args=(event_filter, 2), daemon=True)
+      bsc_event_worker.start()
 
-      # asyncio.run(main()) 
+      # this will stop execution
+      # bot.polling(none_stop=True, timeout=60) #constantly get messages from Telegram
 
-      worker = Thread(target=log_loop, args=(event_filter, 2), daemon=True)
-      worker.start()
+      # this will run bot polling in a thread
+      threading.Thread(target=bot.infinity_polling, name='bot_infinity_polling', daemon=True).start()
   
-      bot.polling(none_stop=True, timeout=60) #constantly get messages from Telegram
 
+      # this is for running the scheduele polling 
+      threading.Thread(target=schedule_pending_loop, name='schedule_pending_loop', daemon=False).start()
+
+      # basic loop for scheduele polling
+      
+      # while True:
+      #   print("run pending")
+      #   schedule.run_pending()
+      #   time.sleep(1)
+
+      while True:
+        print("this happens")
+        time.sleep(1)
+
+
+
+
+      # await asyncio.gather(bot.infinity_polling(), scheduler())
     except:
 
         # traceback_error_string=traceback.format_exc()
@@ -1043,4 +1276,17 @@ def telegram_polling():
         telegram_polling()
 
 if __name__ == '__main__':    
-    telegram_polling()
+  # asyncio.run(main())
+  # asyncio.run(telegram_polling())
+  
+  telegram_polling()
+
+
+
+
+# async def main():
+
+
+# if __name__ == '__main__':
+
+

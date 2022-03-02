@@ -6,10 +6,13 @@ authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pyTelegramBotAPI = "^3.7.7"
 replit = "^3.2.4"
 pytube = "^11.0.1"
 web3 = "^5.25.0"
+aioschedule = "^0.5.2"
+pyTelegramBotAPI = "^4.4.0"
+youtube-search-python = "^1.6.2"
+schedule = "^1.1.0"
 
 [tool.poetry.dev-dependencies]
 
