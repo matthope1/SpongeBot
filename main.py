@@ -988,7 +988,7 @@ def display_commands(message):
 
 # chaturls = ['https://t.me/testChannelspongey', 'https://t.me/Sponge_bot_testing', 'https://t.me/testChannelSpongey2']
 
-# @background
+@background
 def send_soft_shill(chat_id, loop_counter):
   # try: 
   #   # gif = open('./assets/321.gif', 'rb')
@@ -1228,9 +1228,12 @@ def thread_test():
 
 def schedule_pending_loop():
    while True:
+     try: 
       print("scheduele polling...")
       schedule.run_pending()
       time.sleep(1)
+     except Exception as e:
+        print("scheduele polling error: ", e)
 
 def telegram_polling():
     try:
@@ -1257,7 +1260,7 @@ def telegram_polling():
       #   time.sleep(1)
 
       while True:
-        print("this happens")
+        print("Program loop...")
         time.sleep(1)
 
 
