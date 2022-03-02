@@ -315,60 +315,6 @@ bot = telebot.TeleBot(API_KEY)
 
 print("bot", bot)
 
-# # start testing 
-
-
-# async def beep(chat_id) -> None:
-#     """Send the beep message."""
-#     await bot.send_message(chat_id, text='Beep!')
-#     # aioschedule.clear(chat_id)  # return schedule.CancelJob not working in aioschedule use tag for delete
-
-
-# @bot.message_handler(commands=['help', 'start'])
-# async def send_welcome(message):
-#   await bot.reply_to(message, "Hi! Use /set <seconds> to set a timer")
-  
-# async def send_welcome(message):
-  # await bot.reply_to(message, "Hi! Use /set <seconds> to set a timer")
-
-
-# @bot.message_handler(commands=['set'])
-# async def set_timer(message):
-#     print("set called from : ", message.chat.id)
-#     args = message.text.split()
-#     if len(args) > 1 and args[1].isdigit():
-#       sec = int(args[1])
-#       aioschedule.every(sec).seconds.do(beep, message.chat.id).tag(message.chat.id)
-#     else:
-#       await bot.reply_to(message, 'Usage: /set <seconds>')
-
-
-
-# @bot.message_handler(commands=['get_jobs'])
-# async def get_jobs(message):
-#   print("attrs: ", dir(aioschedule))
-
-#   print("jobs", aioschedule.jobs)
-
-#   return
-  
-#   jobs = aioschedule.get_jobs('2042710483')
-#   print("jobs: ", jobs)
-  
-  
-  
-
-
-
-# async def scheduler():
-#     while True:
-#         await aioschedule.run_pending()
-#         await asyncio.sleep(1)
-
-
-# end testing
-
-
 chat_id = 'Sponge_bot_testing'
 
 print("Sponge bot running...") 
