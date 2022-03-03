@@ -819,10 +819,6 @@ def set_timer(message):
   else:
     bot.reply_to(message, 'Usage: /set <seconds>')
 
-@bot.message_handler(commands=['unset'])
-def unset_timer(message):
-    print("unset for chat: ", message.chat.id)
-    schedule.clear(message.chat.id)
 
 # end sync tesing
 
@@ -930,6 +926,7 @@ def display_commands(message):
 # chaturls = ['https://t.me/testChannelspongey', 'https://t.me/Sponge_bot_testing', 'https://t.me/testChannelSpongey2']
 
 
+# TODO:
 def send_soft_shill_group(chat_id):
   print("send soft shill group")
   
@@ -949,40 +946,35 @@ def send_soft_shill_group(chat_id):
   bot.send_message(chat_id, f"GO! {randomUrl}")
 
 def run_threaded(job_func, *args):
-  print(" ")
-  print("args: ", *args)
-  print(" ")
   chat_id = args[0]
-  print("chatid", chat_id)
-  
-  job_thread = threading.Thread(target=job_func, args = (args))
+  job_thread = threading.Thread(target=job_func, args = (chat_id))
   job_thread.start()
+
+# unset a shill schedule
+@bot.message_handler(commands=['unset'])
+def unset_timer(message):
+    print("unset for chat: ", message.chat.id)
+    schedule.clear(message.chat.id)
+
   
 @bot.message_handler(commands=['soft_shill_test'])
 @check_admin
 def set_soft_shill(message):
-  
   # SOFT_SHILL_LOOP = 120 
+  chat_id = message.chat.id
   SOFT_SHILL_LOOP = 10 
+  bot.send_message(chat_id, "Soft shilling is: talking about the project in a casual manner that may not come off as shilling to people who aren’t aware of what shilling is")
+  time.sleep(10)
   
-  print("set soft shill called for chat: ", message.chat.id)
+  # TODO: check if there's already a schedule running for this chat id
+  jobs = schedule.get_jobs(chat_id)
+  print("jobs:", jobs)
+  if (len(jobs) > 0):
+    bot.send_message(chat_id, "you are already running a soft shill")
+    return
   
-  bot.send_message(message.chat.id, "Soft shilling is: talking about the project in a casual manner that may not come off as shilling to people who aren’t aware of what shilling is")
-
-  # time.sleep(10)
-
-  # send_soft_shill_group(message.chat.id)
-
-
-  
-  schedule.every(SOFT_SHILL_LOOP).seconds.do(run_threaded, send_soft_shill_group, message.chat.id).tag(message.chat.id)
-
-  # args = message.text.split()
-  # if len(args) > 1 and args[1].isdigit():
-  #   sec = int(args[1])
-  #   # schedule.every(sec).seconds.do(send_soft_shill_group, message.chat.id).tag(message.chat.id)
-  # else:
-  #   bot.reply_to(message, 'Usage: /set <seconds>')
+  send_soft_shill_group(chat_id)
+  schedule.every(SOFT_SHILL_LOOP).seconds.do(run_threaded, send_soft_shill_group, chat_id).tag(chat_id)
 
 
 @background
