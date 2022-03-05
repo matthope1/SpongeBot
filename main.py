@@ -926,7 +926,20 @@ def display_commands(message):
 # chaturls = ['https://t.me/testChannelspongey', 'https://t.me/Sponge_bot_testing', 'https://t.me/testChannelSpongey2']
 
 
-# TODO:
+
+def run_threaded(job_func, *args):
+  chat_id = args[0]
+  job_thread = threading.Thread(target=job_func, args = [chat_id])
+  job_thread.start()
+
+# unset a shill schedule
+@bot.message_handler(commands=['stop_shill'])
+def stop_shill(message):
+  chat_id = message.chat.id
+  print("Stop shill for chat: ", chat_id)
+  schedule.clear(chat_id)
+  bot.send_message(chat_id, "stopping shill called")
+  
 def send_soft_shill_group(chat_id):
   print("send soft shill group")
   
@@ -944,20 +957,8 @@ def send_soft_shill_group(chat_id):
   time.sleep(3)
 
   bot.send_message(chat_id, f"GO! {randomUrl}")
-
-def run_threaded(job_func, *args):
-  chat_id = args[0]
-  job_thread = threading.Thread(target=job_func, args = [chat_id])
-  job_thread.start()
-
-# unset a shill schedule
-@bot.message_handler(commands=['unset'])
-def unset_timer(message):
-    print("unset for chat: ", message.chat.id)
-    schedule.clear(message.chat.id)
-
   
-@bot.message_handler(commands=['soft_shill_test'])
+@bot.message_handler(commands=['soft_shill'])
 @check_admin
 def set_soft_shill(message):
   # SOFT_SHILL_LOOP = 120 
@@ -966,15 +967,50 @@ def set_soft_shill(message):
   bot.send_message(chat_id, "Soft shilling is: talking about the project in a casual manner that may not come off as shilling to people who aren’t aware of what shilling is")
   time.sleep(10)
   
-  # TODO: check if there's already a schedule running for this chat id
   jobs = schedule.get_jobs(chat_id)
   print("jobs:", jobs)
   if (len(jobs) > 0):
-    bot.send_message(chat_id, "you are already running a soft shill")
+    bot.send_message(chat_id, "Warning* you are already running a soft shill")
     return
-  
-  send_soft_shill_group(chat_id)
-  schedule.every(SOFT_SHILL_LOOP).seconds.do(run_threaded, send_soft_shill_group, chat_id).tag(chat_id)
+
+  shill_group_check = check_user_shill_group(message)
+
+  if shill_group_check:
+    print("shillgroup check : ", shill_group_check)
+    send_soft_shill_group(chat_id)
+    schedule.every(SOFT_SHILL_LOOP).seconds.do(run_threaded, send_soft_shill_group, chat_id).tag(chat_id)
+  else:
+    print("shill group check returned false")
+    bot.send_message(chat_id, "shill group check returned false")
+      
+
+def check_user_shill_group(message):
+  print("check user shill group called")
+  try:
+    username = message.from_user.username
+    user_id = message.from_user.id
+    chat_id = message.chat.id
+    user_index = get_user_index(username)
+    print("userid: ", user_id)
+
+    if user_id == -1: 
+      bot.send_message(chat_id, f"User not found")
+      return False
+
+    if not is_game_master(user_id):
+      shill_group = db['adminList'][user_index]['shillGroup']
+      if shill_group and shill_group != chat_id:
+        bot.send_message(chat_id, f"You cannot use Sponge Bot in more than one group, after your current admin session is over, buy more hours to use Sponge Bot in another group")
+        return False
+
+      elif not shill_group and not is_game_master(user_id):   
+        bot.send_message(chat_id, f"Your shill group will now be set to the group you have sent this command from")
+        update_admin_shill_group(username, chat_id)
+        
+    return True
+      
+  except Exception as e:
+    print("check user shill group error", e)
 
 
 @background
