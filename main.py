@@ -947,7 +947,7 @@ def send_soft_shill_group(chat_id):
 
 def run_threaded(job_func, *args):
   chat_id = args[0]
-  job_thread = threading.Thread(target=job_func, args = (chat_id))
+  job_thread = threading.Thread(target=job_func, args = [chat_id])
   job_thread.start()
 
 # unset a shill schedule
