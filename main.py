@@ -938,7 +938,7 @@ def stop_shill(message):
   chat_id = message.chat.id
   print("Stop shill for chat: ", chat_id)
   schedule.clear(chat_id)
-  bot.send_message(chat_id, "stopping shill called")
+  bot.send_message(chat_id, "stopping shill raid")
   
 def send_soft_shill_group(chat_id):
   print("send soft shill group")
@@ -1011,9 +1011,6 @@ def check_user_shill_group(message):
       
   except Exception as e:
     print("check user shill group error", e)
-
-
-
 
 # TODO: test me
 @bot.message_handler(commands=['message_all_groups'])
