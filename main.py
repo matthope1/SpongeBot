@@ -315,41 +315,8 @@ def log_loop(event_filter, poll_interval):
 
 
 # DECORATORS
-def background(f):
-  def wrap(*args, **kwargs):
-    try: 
-      # TODO: read asyncio docs
-      # TODO: check if there's an even loop, if there isn't, then start one and continue
-      loop = asyncio.new_event_loop()
-      asyncio.set_event_loop(loop)
-      this = asyncio.get_event_loop().run_in_executor(None, f, *args, **kwargs)
-    except Exception as e:
-      print("background decorator error:", e)
-    return this
-  return wrap
 
 
-
-def mydecorator(f):  # f is the function passed to us from python
-  async def log_f_as_called(*args, **kwargs):
-    print(f'{f} was called.')
-    await f(*args, **kwargs)
-  return log_f_as_called
-  
-def myotherdecorator(f):  # f is the function passed to us from python
-  def log_f_as_called(*args, **kwargs):
-    print(f'{f} was called OH YO MOMMA.')
-    f(*args, **kwargs)
-  return log_f_as_called
-
-def test_decorator(func):
-
-  def wrap(*args, **kwargs):
-    print("test decorator called")
-    return
-
-  return wrap
-  
 def check_game_master(func):
   '''Decorator that reports the execution time.'''
 

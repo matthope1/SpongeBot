@@ -137,3 +137,21 @@ async def song(message):
  
   except Exception as e:
     print("Song error: ", e)
+
+
+
+
+# decorators
+
+def background(f):
+  def wrap(*args, **kwargs):
+    try: 
+      # TODO: read asyncio docs
+      # TODO: check if there's an even loop, if there isn't, then start one and continue
+      loop = asyncio.new_event_loop()
+      asyncio.set_event_loop(loop)
+      this = asyncio.get_event_loop().run_in_executor(None, f, *args, **kwargs)
+    except Exception as e:
+      print("background decorator error:", e)
+    return this
+  return wrap
