@@ -763,65 +763,6 @@ async def greet(message):
 
   await bot.reply_to(message, "Hey! Hows it going?")
 
-
-@mydecorator
-@check_game_master
-async def testFunc(message):
-  print("myfunc")
-  await bot.reply_to(message, "Hey this is greet2! Hows it going?")
-  
-
-# testing
-@bot.message_handler(commands=['Greet2'])
-# @myotherdecorator
-# @check_game_master
-async def greet2(message):
-  print("greet 2 called")
-  # print("message: ", message)
-  user = message.from_user 
-  print("user", user.id)
-  await testFunc(message)
-  return
-  # list_database()
-
-  await bot.reply_to(message, "Hey this is greet2! Hows it going?")
-
-
-
-# @bot.message_handler(commands=['unset'])
-# def unset_timer(message):
-#   # aioschedule.clean(message.chat.id)
-#   aioschedule.clear(message.chat.id)
-
-
-# end testing
-
-# start sync testing
-@bot.message_handler(commands=['help', 'start'])
-def send_welcome(message):
-    bot.reply_to(message, "Hi! Use /set <seconds> to set a timer")
-
-def beep(chat_id) -> None:
-  """Send the beep message."""
-  print("sending beep message")
-  bot.send_message(chat_id, text='Beep!')
-
-@bot.message_handler(commands=['set'])
-def set_timer(message):
-  print("set called for chat: ", message.chat.id)
-  args = message.text.split()
-  if len(args) > 1 and args[1].isdigit():
-    sec = int(args[1])
-
-    print("scheduele1")
-    schedule.every(sec).seconds.do(beep, message.chat.id).tag(message.chat.id)
-    print("scheduele2")
-  else:
-    bot.reply_to(message, 'Usage: /set <seconds>')
-
-
-# end sync tesing
-
 @bot.message_handler(commands=['view_admins'])
 @check_game_master
 def view_admins(message):
@@ -937,7 +878,14 @@ def run_threaded(job_func, *args):
 def stop_shill(message):
   chat_id = message.chat.id
   print("Stop shill for chat: ", chat_id)
+  
+  jobs = schedule.get_jobs(chat_id)
+  print("jobs before clear:", jobs)
+  
   schedule.clear(chat_id)
+  jobs = schedule.get_jobs(chat_id)
+  print("jobs after clear:", jobs)
+  
   bot.send_message(chat_id, "stopping shill raid")
   
 def send_soft_shill_group(chat_id):
@@ -969,6 +917,7 @@ def set_soft_shill(message):
   
   jobs = schedule.get_jobs(chat_id)
   print("jobs:", jobs)
+  
   if (len(jobs) > 0):
     bot.send_message(chat_id, "Warning* you are already running a soft shill")
     return
