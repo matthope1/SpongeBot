@@ -864,10 +864,6 @@ def display_commands(message):
   
   bot.send_message(message.chat.id, f"Spongebot has the following commands: \n {commands}")
 
-# chaturls = ['https://t.me/testChannelspongey', 'https://t.me/Sponge_bot_testing', 'https://t.me/testChannelSpongey2']
-
-
-
 def run_threaded(job_func, *args):
   chat_id = args[0]
   job_thread = threading.Thread(target=job_func, args = [chat_id])
@@ -1040,73 +1036,6 @@ def yt_search(song):
     print("yt song error: ", e)
     
 
-def test_song(client, message):
-  print("song test")
-
-@bot.message_handler(commands=['song'])
-def test(message):
-  print("test called")
-  print("now calling test song")
-  test_song("client", message)
-
-def get_args(message_text):
-  if " " in message_text: 
-    return message_text.split(" ")
-
-@bot.message_handler(commands=['Song'])
-async def song(message):
-  try: 
-    print("song called")
- 
-    chat_id = message.chat.id
-    user_id = message.from_user.id
-    song_name = ""
-
-    message_args = get_args(message.text)
-    print("message args", message_args)
-    if message_args:
-      song_name = message_args[1]
-    
-    # await bot.reply_to(message, "Searching the song reply to")
-    # await bot.send_message(chat_id, text='Searching the song send message')
-    
-    status = await bot.reply_to(message,"🚀 🔎 🔎 𝐒𝐞𝐚𝐫𝐜𝐡𝐢𝐧𝐠 𝐭𝐡𝐞 𝐬𝐨𝐧𝐠... 🎶 𝐏𝐥𝐞𝐚𝐬𝐞 𝐖𝐚𝐢𝐭 ⏳️ 𝐅𝐨𝐫 𝐅𝐞𝐰 𝐒𝐞𝐜𝐨𝐧𝐝𝐬 [🚀](https://telegra.ph/file/67f41ae52a85dfc0551ae.mp4)")
-    video_link = yt_search(song_name)
-    
-    if not video_link:
-        await status.edit("✖️ 𝐅𝐨𝐮𝐧𝐝 𝐍𝐨𝐭𝐡𝐢𝐧𝐠. 𝐒𝐨𝐫𝐫𝐲.\n\n𝐓𝐫𝐲 𝐀𝐧𝐨𝐭𝐡𝐞𝐫 𝐊𝐞𝐲𝐰𝐨𝐫𝐤 𝐎𝐫 𝐌𝐚𝐲𝐛𝐞 𝐒𝐩𝐞𝐥𝐥 𝐈𝐭 𝐏𝐫𝐨𝐩𝐞𝐫𝐥𝐲.\n\nEg.`/song Faded`")
-        return ""
-    yt = YouTube(video_link)
-    audio = yt.streams.filter(only_audio=True).first()
-    try:
-        download = audio.download(filename=f"{str(user_id)}")
-    except Exception as ex:
-        await status.edit("Failed to download song 😶")
-        # LOGGER.error(ex)
-        return ""
-    rename = os.rename(download, f"{str(user_id)}.mp3")
-    await app.send_chat_action(message.chat.id, "upload_audio")
-    await app.send_audio(
-        chat_id=message.chat.id,
-        audio=f"{str(user_id)}.mp3",
-        duration=int(yt.length),
-        title=str(yt.title),
-        performer=str(yt.author),
-        reply_to_message_id=message.message_id,
-    )
-    await status.delete()
-    os.remove(f"{str(user_id)}.mp3")
- 
-  except Exception as e:
-    
-    print("Song error: ", e)
-
-# bot.polling()
-# async def telegram_polling():
-
-def thread_test():
-  print('thread test')
-
 def schedule_pending_loop():
    while True:
      try: 
@@ -1128,26 +1057,16 @@ def telegram_polling():
 
       # this will run bot polling in a thread
       threading.Thread(target=bot.infinity_polling, name='bot_infinity_polling', daemon=True).start()
-  
 
       # this is for running the scheduele polling 
       threading.Thread(target=schedule_pending_loop, name='schedule_pending_loop', daemon=False).start()
 
       # basic loop for scheduele polling
-      
-      # while True:
-      #   print("run pending")
-      #   schedule.run_pending()
-      #   time.sleep(1)
 
       while True:
         print("Program loop...")
         time.sleep(1)
 
-
-
-
-      # await asyncio.gather(bot.infinity_polling(), scheduler())
     except:
 
         # traceback_error_string=traceback.format_exc()
@@ -1160,17 +1079,4 @@ def telegram_polling():
         telegram_polling()
 
 if __name__ == '__main__':    
-  # asyncio.run(main())
-  # asyncio.run(telegram_polling())
-  
   telegram_polling()
-
-
-
-
-# async def main():
-
-
-# if __name__ == '__main__':
-
-
