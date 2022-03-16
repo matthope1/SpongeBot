@@ -41,7 +41,6 @@ bscProvider = "https://bsc-dataseed.binance.org/"
 # bscProvider = "https://data-seed-prebsc-1-s1.binance.org:8545/"
 
 web3 = Web3(Web3.HTTPProvider(bscProvider))
-# print(web3.isConnected())
 
 address = "0x772E8A12A8374A4d070538Ea920A4339Bb0959e7" 
 balance = web3.eth.get_balance(address)
@@ -315,8 +314,6 @@ def log_loop(event_filter, poll_interval):
 
 
 # DECORATORS
-
-
 def check_game_master(func):
   '''Decorator that reports the execution time.'''
 
@@ -433,7 +430,6 @@ def is_admin(username):
     # res = check_time_passed(user_acc['createdDate'], 0.001)
     if not res:
       # user is still admin
-      # FIXME: why does this not continue on to the requested function call
       print("user is still an admin, continue on to requested fuction call")
       return True, 'noerr'
     else:
@@ -654,7 +650,7 @@ async def greetFunc(message):
   await bot.reply_to(message, "Hey! Hows it going?")
 
 @bot.message_handler(commands=['Greet'])
-# @check_game_master
+@check_game_master
 async def greet(message):
   # print("message: ", message)
   await greetFunc(message)
